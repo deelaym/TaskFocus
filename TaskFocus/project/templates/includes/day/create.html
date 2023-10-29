@@ -1,0 +1,11 @@
+<form method="post" action="{% url 'project:day_create' project.slug %}">
+    {% csrf_token %}
+    <div class="card mb-3" style="width: 25rem;">
+        <div class="card-header">
+            <h2 class="h2">{{ form.name }}</h2>
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <input class="btn btn-primary" type="submit" value="+">
+        </div>
+    </div>
+</form>

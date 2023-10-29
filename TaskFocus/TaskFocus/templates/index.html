@@ -1,23 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     {% for project in projects %}
-        <p>{{ project.name }} - {{ project.timer }}:</p>
-        {% for day in project.days.all %}
-            <p>{{ day.name }}:</p>
-            <ul>
-                {% for task in day.tasks.all %}
-                    <li>{{ task.name }}</li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
+        <div class="card mb-3">
+            <a href="{% url 'project:project_detail' project.slug %}" class="link-dark link-underline link-underline-opacity-0">
+                <div class="card-body">
+                    <p class="d-flex align-items-center justify-content-between"><span class="h2">{{ project.name }}</span> {{ project.timer }}</p>
+                </div>
+            </a>
+        </div>
     {% endfor %}
-</body>
-</html>
+{% endblock %}

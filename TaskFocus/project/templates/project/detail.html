@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for day in project.days.all %}
+        <div class="card mb-3" style="width: 25rem;">
+            <div class="card-header">
+                <h2 class="h2">{{ day.name }}</h2>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for task in day.tasks.all %}
+                    <li class="list-group-item">{{ task.name }}</li>
+                {% endfor %}
+            </ul>
+            <div class="card-footer d-flex justify-content-center">
+                <input class="btn btn-primary" type="submit" value="Complete">
+            </div>
+        </div>
+    {% endfor %}
+
+    {% include 'includes/day/create.html' %}
+
+{% endblock %}
