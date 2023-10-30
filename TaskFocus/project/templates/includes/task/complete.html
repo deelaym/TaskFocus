@@ -1,0 +1,14 @@
+
+<li class="list-group-item">
+    <form method="post" action="{% url 'project:task_complete' project.slug day.id task.id %}">
+        {% csrf_token %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="complete" value="True" onchange="this.form.submit()" {% if task.complete %}checked{% endif %}>
+            <p class="form-check-label">
+                {{ task.name }}
+            </p>
+        </div>
+    </form>
+</li>
+
+

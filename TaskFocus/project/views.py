@@ -12,23 +12,73 @@ def index(request):
 
 def project_detail(request, slug):
     project = Project.objects.get(slug=slug)
-    form = DayForm()
+    day_form = DayForm()
+    task_form = TaskForm()
+
+
+
     return render(request, 'project/detail.html', {'project': project,
-                                                   'form': form})
+                                                   'day_form': day_form,
+                                                   'task_form': task_form})
 
 
-def day_form(request, slug):
+def day_create(request, slug):
     project = get_object_or_404(Project, slug=slug)
     if request.POST:
-        form = DayForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
+        day_form = DayForm(request.POST)
+        if day_form.is_valid():
+            name = day_form.cleaned_data['name']
             day = Day(name=name, project=project)
             day.save()
             return redirect('project:project_detail', slug=slug)
     else:
-        form = DayForm()
-        return render(request, 'includes/day/create.html', {'form': form, 'project': project})
+        day_form = DayForm()
+        return render(request, 'includes/day/create.html', {'day_form': day_form, 'project': project})
+
+
+def task_create(request, slug, id):
+    day = get_object_or_404(Day, id=id)
+    project = get_object_or_404(Project, slug=slug)
+    if request.POST:
+        task_form = TaskForm(request.POST)
+        if task_form.is_valid():
+            cd = task_form.cleaned_data
+            name = cd['name']
+            optional = cd['optional']
+            task = Task(name=name, optional=optional, day=day)
+            task.save()
+            return redirect('project:project_detail', slug=slug)
+    else:
+        task_form = TaskForm()
+        return render(request, 'includes/task/create.html', {'task_form': task_form,
+                                                             'day': day,
+                                                             'project': project})
+
+def task_complete(request, slug, day_id, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    project = get_object_or_404(Project, slug=slug)
+    day = get_object_or_404(Day, id=day_id)
+    if request.POST:
+        task.complete = request.POST.get('complete') == 'True'
+        task.save()
+        return redirect('project:project_detail', slug=slug)
+    else:
+        return render(request, 'includes/task/complete.html',
+                      {'task': task,
+                       'project': project,
+                       'day': day})
+
+# def task_edit(request, slug, task_id):
+#     task = get_object_or_404(Task, id=task_id)
+#     if request.POST:
+#         task.name = request.POST.get('name')
+#         task.optional = request.POST.get('optional')
+#         task.complete = request.POST.get('complete')
+#         task.save()
+#         return redirect('project:project_detail', slug=slug)
+#     else:
+#         tasks = Task.objects.all()
+#         return render(request, 'includes/task/edit.html', {'tasks': tasks})
 
 
 def initialize():

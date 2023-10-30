@@ -15,3 +15,9 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = ['day']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 23rem;', 'placeholder': 'Task'}),
+            'optional': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'complete': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+

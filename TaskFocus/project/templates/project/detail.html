@@ -1,15 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h2 class="h2">{{ project.name }}</h2>
+    <p>{{ project.timer }}</p>
+
+    {{ complete_task }}
+
     {% for day in project.days.all %}
         <div class="card mb-3" style="width: 25rem;">
             <div class="card-header">
-                <h2 class="h2">{{ day.name }}</h2>
+                <h3 class="h3">{{ day.name }}</h3>
             </div>
             <ul class="list-group list-group-flush">
                 {% for task in day.tasks.all %}
-                    <li class="list-group-item">{{ task.name }}</li>
+                    {% include 'includes/task/complete.html' %}
+<!--                    <li class="list-group-item">-->
+<!--                        <form method="post">-->
+<!--                            <div class="form-check">-->
+<!--                                <input class="form-check-input" type="checkbox" value="complete" id="flexCheckDefault">-->
+<!--                                <p class="form-check-label" for="flexCheckDefault">-->
+<!--                                    {{ task.name }}-->
+<!--                                </p>-->
+<!--                            </div>-->
+<!--                        </form>-->
+<!--                    </li>-->
                 {% endfor %}
+                {% include 'includes/task/create.html' %}
             </ul>
             <div class="card-footer d-flex justify-content-center">
                 <input class="btn btn-primary" type="submit" value="Complete">

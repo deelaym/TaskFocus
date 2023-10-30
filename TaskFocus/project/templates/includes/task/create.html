@@ -1,0 +1,14 @@
+<form method="post" action="{% url 'project:task_create' project.slug day.id  %}">
+    {% csrf_token %}
+    <li class="list-group-item">
+        <p>{{ task_form.name }}</p>
+        <p class="d-flex justify-content-between">
+            {{ task_form.optional.label }} {{ task_form.optional }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            <input class="btn btn-primary" type="submit" value="+">
+        </div>
+    </li>
+
+</form>

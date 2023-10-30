@@ -7,6 +7,7 @@ class Project(models.Model):
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
     slug = models.SlugField()
+    edit_mod = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -22,8 +23,7 @@ class Day(models.Model):
 
 class Task(models.Model):
     day = models.ForeignKey(Day, on_delete=models.CASCADE, related_name='tasks')
-    name = models.TextField(blank=True)
-    url = models.URLField(blank=True)
+    name = models.CharField(max_length=200)
     complete = models.BooleanField(default=False)
     optional = models.BooleanField(default=False)
 
