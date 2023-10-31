@@ -7,7 +7,7 @@ class DayForm(forms.ModelForm):
         model = Day
         fields = ['name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 23rem;'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 40rem;'}),
                   }
 
 
@@ -16,7 +16,7 @@ class TaskForm(forms.ModelForm):
         model = Task
         exclude = ['day']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 23rem;', 'placeholder': 'Task'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 40rem;', 'placeholder': 'Task'}),
             'optional': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'complete': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

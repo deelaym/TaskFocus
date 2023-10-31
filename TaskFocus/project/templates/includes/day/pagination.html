@@ -1,0 +1,25 @@
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a {% if not days.has_previous %} class="page-link  disabled" href="#" {% else %} class="page-link" href="?page={{ days.previous_page_number }}" {% endif %} aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        {% for i, day in enum %}
+            <li class="page-item">
+                {% if i <= days.number|add:3 and i >= days.number|add:-3 %}
+                    <a class="page-link {% if days.number == i %} active {% elif day.complete %} bg-success text-white {% endif %}" href="?page={{ i }}">
+                        {{ day.name }}
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+
+        <li class="page-item">
+            <a {% if not days.has_next %} class="page-link  disabled" href="#" {% else %} class="page-link" href="?page={{ days.next_page_number }}" {% endif %} aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

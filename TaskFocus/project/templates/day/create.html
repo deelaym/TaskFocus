@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post" action="{% url 'project:day_create' project.slug %}">
+        {% csrf_token %}
+        <div class="card mb-3" style="width: 42rem;">
+            <div class="card-header">
+                {{ day_form.name }}
+            </div>
+            <div class="card-footer d-flex justify-content-center">
+                <input class="btn btn-primary" type="submit" value="+">
+            </div>
+        </div>
+    </form>
+{% endblock %}
