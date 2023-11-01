@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div class="mb-3"><a href="{% url 'project:project_create' %}">
+        <input type="button" class="btn btn-primary" value="Create a project">
+    </a></div>
     {% for project in projects %}
         <div class="card mb-3">
             <a href="{% url 'project:project_detail' project.slug %}" class="link-dark link-underline link-underline-opacity-0">
                 <div class="card-body">
-                    <p class="d-flex align-items-center justify-content-between"><span class="h2">{{ project.name }}</span> {{ project.timer }}</p>
+                    <p class="d-flex align-items-center justify-content-between">
+                        <span class="h2">{{ project.name }}</span>
+                        {{ project.timer }}
+                        <a href="{% url 'project:project_delete' project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    </p>
                 </div>
             </a>
         </div>

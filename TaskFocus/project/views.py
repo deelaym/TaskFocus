@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Day, Task
-from .forms import DayForm, TaskForm
+from .forms import DayForm, TaskForm, ProjectForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
 
@@ -10,9 +10,25 @@ def index(request):
     projects = Project.objects.all()
     return render(request, 'index.html', {'projects': projects})
 
+def project_create(request):
+    if request.POST:
+        project_form = ProjectForm(request.POST)
+        if project_form.is_valid():
+            project = Project(name=project_form.cleaned_data['name'])
+            project.save()
+            return redirect('project:project_detail', slug=project.slug)
+    else:
+        project_form = ProjectForm()
+        return render(request, 'project/create.html', {'project_form': project_form})
+
+
+def project_delete(request, slug):
+    project = get_object_or_404(Project, slug=slug)
+    project.delete()
+    return redirect('project:index')
 
 def pagination(request, slug):
-    project = Project.objects.get(slug=slug)
+    project = get_object_or_404(Project, slug=slug)
     day_list = project.days.all()
     paginator = Paginator(day_list, 1)
     page_number = request.GET.get('page', 1)
@@ -27,8 +43,9 @@ def pagination(request, slug):
     return [paginator, days, enum]
 
 
+
 def project_detail(request, slug):
-    project = Project.objects.get(slug=slug)
+    project = get_object_or_404(Project, slug=slug)
     day_form = DayForm()
     task_form = TaskForm()
 
@@ -57,6 +74,10 @@ def day_create(request, slug):
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
 
+def day_delete(request, slug, day_id):
+    day = get_object_or_404(Day, id=day_id)
+    day.delete()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 def task_create(request, slug, id):
     day = get_object_or_404(Day, id=id)
@@ -89,6 +110,13 @@ def task_complete(request, slug, day_id, task_id):
                       {'task': task,
                        'project': project,
                        'day': day})
+
+
+def task_delete(request, slug, day_id, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
 
 # def task_edit(request, slug, task_id):
 #     task = get_object_or_404(Task, id=task_id)
