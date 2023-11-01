@@ -3,6 +3,7 @@ from .models import Project, Day, Task
 from .forms import DayForm, TaskForm, ProjectForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
+from django.contrib import messages
 
 
 def index(request):
@@ -72,6 +73,22 @@ def day_create(request, slug):
     else:
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
+
+
+def day_complete(request, slug, day_id):
+    day = get_object_or_404(Day, id=day_id)
+    project = get_object_or_404(Project, slug=slug)
+    if request.POST:
+        tasks_mandatory = day.tasks.filter(optional=False)
+        if tasks_mandatory.count() == tasks_mandatory.filter(complete=True).count():
+            day.complete = request.POST.get('complete') == 'Complete'
+            day.save()
+        else:
+            messages.error(request, 'All required tasks must be completed to complete the day.', extra_tags='danger')
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return render(request, 'includes/day/complete.html', {'day': day,
+                                                              'project': project})
 
 
 def day_edit(request, slug, day_id):
@@ -161,18 +178,5 @@ def task_delete(request, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     task.delete()
     return redirect(request.META.get('HTTP_REFERER'))
-
-
-# def task_edit(request, slug, task_id):
-#     task = get_object_or_404(Task, id=task_id)
-#     if request.POST:
-#         task.name = request.POST.get('name')
-#         task.optional = request.POST.get('optional')
-#         task.complete = request.POST.get('complete')
-#         task.save()
-#         return redirect('project:project_detail', slug=slug)
-#     else:
-#         tasks = Task.objects.all()
-#         return render(request, 'includes/task/edit.html', {'tasks': tasks})
 
 

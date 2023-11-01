@@ -27,12 +27,12 @@
                     {% endif %}
                 </ul>
                 <div class="card-footer d-flex justify-content-center">
-                    <form method="post">
+                    <form method="post" action="{% url 'project:day_complete' project.slug day.id %}">
                         {% csrf_token %}
                         {% if day.complete %}
-                            <input class="btn btn-secondary" type="submit" name="Incomplete" value="Incomplete">
+                            <input class="btn btn-secondary" type="submit" name="Incomplete" value="Incomplete" onchange="this.form.submit()">
                         {% else %}
-                            <input class="btn btn-primary" type="submit" name="complete" value="Complete">
+                            <input class="btn btn-primary" type="submit" name="complete" value="Complete" onchange="this.form.submit()">
                         {% endif %}
                     </form>
 
