@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post" action="{% url 'project:task_edit' project.slug day.id task.id %}">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            <div class="card mb-3" style="width: 42rem;">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                        <span class="h3">{{ day.name }}</span>
+                    </span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+
+                            <p class="form-check-label text-wrap text-break ">
+                                {{ task_form.name }}
+                            </p>
+                            <p class="d-flex justify-content-between">{{ task_form.optional.label }} {{ task_form.optional }}</p>
+
+                    </li>
+                </ul>
+                <div class="card-footer d-flex justify-content-center">
+                    <input class="btn btn-primary" type="submit" value="Submit">
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+
+

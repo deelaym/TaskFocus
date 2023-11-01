@@ -12,8 +12,11 @@
         <div class="d-flex justify-content-center">
             <div class="card mb-3" style="width: 42rem;">
                 <div class="card-header d-flex justify-content-between">
-                    <h3 class="h3">{{ day.name }}</h3>
-                    <a href="{% url 'project:day_delete' project.slug day.id %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    <span>
+                        <span class="h3">{{ day.name }}</span>
+                        <a href="{% url 'project:day_edit' project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">Edit</a>
+                    </span>
+                    <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for task in day.tasks.all %}
@@ -26,7 +29,11 @@
                 <div class="card-footer d-flex justify-content-center">
                     <form method="post">
                         {% csrf_token %}
-                        <input class="btn btn-primary" type="submit" name="complete" value="Complete">
+                        {% if day.complete %}
+                            <input class="btn btn-secondary" type="submit" name="Incomplete" value="Incomplete">
+                        {% else %}
+                            <input class="btn btn-primary" type="submit" name="complete" value="Complete">
+                        {% endif %}
                     </form>
 
                 </div>

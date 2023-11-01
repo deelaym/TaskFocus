@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="card mb-3" style="width: 42rem;">
+            <div class="card-header">
+                {{ day_form.name }}
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for task in day.tasks.all %}
+                    {% include 'includes/task/complete.html' %}
+                {% endfor %}
+            </ul>
+            <div class="card-footer d-flex justify-content-center">
+                <input class="btn btn-primary" type="submit" value="Submit">
+            </div>
+        </div>
+    </form>
+{% endblock %}
