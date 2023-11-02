@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form method="post" action="{% url 'project:task_edit' project.slug day.id task.id %}">
+    <form method="post">
         {% csrf_token %}
         <div class="d-flex justify-content-center">
             <div class="card mb-3" style="width: 42rem;">

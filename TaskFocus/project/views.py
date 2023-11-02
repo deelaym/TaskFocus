@@ -22,6 +22,16 @@ def project_create(request):
         return render(request, 'project/create.html', {'project_form': project_form})
 
 
+def project_edit_mode(request, slug):
+    project = get_object_or_404(Project, slug=slug)
+    if request.POST:
+        project.edit_mode = request.POST.get('edit_mode') == 'Edit mode on'
+        project.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return render(request, 'includes/project/edit_mode.html', {'project': project})
+
+
 def project_delete(request, slug):
     project = get_object_or_404(Project, slug=slug)
     project.delete()
@@ -83,6 +93,9 @@ def day_complete(request, slug, day_id):
         if tasks_mandatory.count() == tasks_mandatory.filter(complete=True).count():
             day.complete = request.POST.get('complete') == 'Complete'
             day.save()
+        elif request.POST.get('complete') != 'Complete':
+            day.complete = False
+            day.save()
         else:
             messages.error(request, 'All required tasks must be completed to complete the day.', extra_tags='danger')
         return redirect(request.META.get('HTTP_REFERER'))
@@ -94,12 +107,13 @@ def day_complete(request, slug, day_id):
 def day_edit(request, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
     project = get_object_or_404(Project, slug=slug)
+    page = request.GET.get('page')
 
     if request.POST:
         day_form = DayForm(request.POST, instance=day)
         if day_form.is_valid():
             day_form.save()
-            return redirect('project:project_detail', slug=slug)
+            return redirect(reverse('project:project_detail', kwargs={'slug': slug}) + f'?page={page}')
         else:
             return render(request, 'day/edit.html', {'day_form': day_form,
                                                      'day': day,
@@ -155,12 +169,13 @@ def task_edit(request, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     day = get_object_or_404(Day, id=day_id)
     project = get_object_or_404(Project, slug=slug)
+    page = request.GET.get('page')
 
     if request.POST:
         task_form = TaskForm(request.POST, instance=task)
         if task_form.is_valid():
             task_form.save()
-            return redirect('project:project_detail', slug=slug)
+            return redirect(reverse('project:project_detail', kwargs={'slug': slug}) + f'?page={page}')
         else:
             return render(request, 'task/edit.html', {'task_form': task_form,
                                                                'task': task,

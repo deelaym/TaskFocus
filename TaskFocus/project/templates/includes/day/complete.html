@@ -1,4 +1,8 @@
-<form method="post">
+<form method="post" action="{% url 'project:day_complete' project.slug day.id %}">
     {% csrf_token %}
-    <input type="submit" value="Complete">
+    {% if day.complete %}
+        <input class="btn btn-secondary" type="submit" name="incomplete" value="Incomplete">
+    {% else %}
+        <input class="btn btn-primary" type="submit" name="complete" value="Complete">
+    {% endif %}
 </form>

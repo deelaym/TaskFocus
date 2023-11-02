@@ -7,7 +7,7 @@ class Project(models.Model):
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
     slug = models.SlugField()
-    edit_mod = models.BooleanField(default=True)
+    edit_mode = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

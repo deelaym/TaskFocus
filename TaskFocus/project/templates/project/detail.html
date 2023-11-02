@@ -2,10 +2,15 @@
 
 {% block content %}
     <h2 class="h2">{{ project.name }}</h2>
-    <p class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between mb-3">
         {{ project.timer }}
-        <a href="{% url 'project:day_create' project.slug %}"><input type="button" class="btn btn-primary" value="Add day"></a>
-    </p>
+        <span>
+            {% include 'includes/project/edit_mode.html' %}
+            {% if project.edit_mode %}
+                <a href="{% url 'project:day_create' project.slug %}"><input type="button" class="btn btn-primary" value="Add day"></a>
+            {% endif %}
+        </span>
+    </div>
     {% include 'includes/day/pagination.html' %}
 
     {% for day in days %}
@@ -14,28 +19,26 @@
                 <div class="card-header d-flex justify-content-between">
                     <span>
                         <span class="h3">{{ day.name }}</span>
-                        <a href="{% url 'project:day_edit' project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">Edit</a>
+                        {% if not day.complete and project.edit_mode %}
+                            <a href="{% url 'project:day_edit' project.slug day.id %}?page={{ days.number }}" class="link-primary link-underline link-underline-opacity-0">
+                                Edit
+                            </a>
+                        {% endif %}
                     </span>
-                    <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    {% if not day.complete and project.edit_mode %}
+                        <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    {% endif %}
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for task in day.tasks.all %}
                         {% include 'includes/task/complete.html' %}
                     {% endfor %}
-                    {% if not day.complete %}
+                    {% if not day.complete and project.edit_mode %}
                         {% include 'includes/task/create.html' %}
                     {% endif %}
                 </ul>
                 <div class="card-footer d-flex justify-content-center">
-                    <form method="post" action="{% url 'project:day_complete' project.slug day.id %}">
-                        {% csrf_token %}
-                        {% if day.complete %}
-                            <input class="btn btn-secondary" type="submit" name="Incomplete" value="Incomplete" onchange="this.form.submit()">
-                        {% else %}
-                            <input class="btn btn-primary" type="submit" name="complete" value="Complete" onchange="this.form.submit()">
-                        {% endif %}
-                    </form>
-
+                    {% include 'includes/day/complete.html' %}
                 </div>
             </div>
         </div>

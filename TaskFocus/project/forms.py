@@ -13,7 +13,7 @@ class ProjectForm(forms.ModelForm):
 class DayForm(forms.ModelForm):
     class Meta:
         model = Day
-        fields = ['name', 'complete']
+        fields = ['name']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 40rem;'}),
                   }
