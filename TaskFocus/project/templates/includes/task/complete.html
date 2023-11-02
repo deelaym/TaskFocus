@@ -1,3 +1,4 @@
+{% load project_tags %}
 <li class="list-group-item">
     <form method="post" action="{% url 'project:task_complete' project.slug day.id task.id %}">
         {% csrf_token %}
@@ -6,9 +7,9 @@
             <p class="form-check-label text-wrap text-break d-flex justify-content-between">
                 <span class="{% if task.complete %} text-decoration-line-through text-body-secondary {% endif %}" style="width: 34rem;">
                     {% if task.optional %}
-                        <span class="text-body-secondary">(Optional) {{ task.name }}</span>
+                        <span class="text-body-secondary">(Optional) {{ task.name|markdown }}</span>
                     {% else %}
-                        {{ task.name }}
+                        <span>{{ task.name|markdown }}</span>
                     {% endif %}
                 </span>
                 {% if not day.complete and project.edit_mode %}
