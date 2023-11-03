@@ -3,7 +3,7 @@
 {% block content %}
     <form method="post">
         {% csrf_token %}
-        <div class="card mb-3" style="width: 42rem;">
+        <div class="card mb-3" style="width: {{ DAY_WIDTH }}%">
             <div class="card-header">
                 {{ day_form.name }}
             </div>

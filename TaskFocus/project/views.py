@@ -6,6 +6,9 @@ from django.urls import reverse
 from django.contrib import messages
 
 
+DAY_WIDTH = 85
+
+
 def index(request):
     projects = Project.objects.all()
     return render(request, 'index.html', {'projects': projects})
@@ -54,6 +57,7 @@ def pagination(request, slug):
     return [paginator, days, enum]
 
 
+
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
     day_form = DayForm()
@@ -61,11 +65,15 @@ def project_detail(request, slug):
 
     paginator, days, enum = pagination(request, slug)
 
+    progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
+
     return render(request, 'project/detail.html', {'project': project,
                                                    'day_form': day_form,
                                                    'task_form': task_form,
                                                    'days': days,
-                                                   'enum': enum})
+                                                   'enum': enum,
+                                                   'progress': progress,
+                                                   'DAY_WIDTH': DAY_WIDTH})
 
 
 def day_create(request, slug):
@@ -186,7 +194,8 @@ def task_edit(request, slug, day_id, task_id):
         return render(request, 'task/edit.html', {'task_form': task_form,
                                                            'task': task,
                                                            'day': day,
-                                                           'project': project})
+                                                           'project': project,
+                                                  'DAY_WIDTH': DAY_WIDTH})
 
 
 def task_delete(request, slug, day_id, task_id):
