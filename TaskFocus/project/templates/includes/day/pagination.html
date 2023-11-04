@@ -1,25 +1,28 @@
-<div>
-    <ul class="pagination justify-content-center">
-        <li class="page-item">
-            <a {% if not days.has_previous %} class="page-link  disabled" href="#" {% else %} class="page-link" href="?page={{ days.previous_page_number }}" {% endif %} aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-
-         {% for i, day in enum %}
-            <li class="page-item">
-                {% if i <= days.number|add:3 and i >= days.number|add:-3 %}
-                    <a class="page-link {% if days.number == i %} active {% elif day.complete %} bg-success text-white {% endif %} text-wrap text-break" href="?page={{ i }}">
-                        {{ day.name }}
-                    </a>
-                {% endif %}
-            </li>
+<div id="carouselDark" class="carousel carousel-dark slide mb-3">
+    <div class="carousel-indicators">
+        {% for i in paginated_days.count %}
+            <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="{{ i }}" class="active" aria-current="true" aria-label="Slide {{ i }}"></button>
         {% endfor %}
-
-        <li class="page-item">
-            <a {% if not days.has_next %} class="page-link  disabled" href="#" {% else %} class="page-link" href="?page={{ days.next_page_number }}" {% endif %} aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-    </ul>
+    </div>
+    <div class="carousel-inner">
+        {% for week in paginated_days %}
+            <div class="carousel-item active">
+            </div>
+            <div class="carousel-item">
+                {% for day in week %}
+                    <figure class="figure border border-primary border-2 rounded" style="width: 10%; height: 100px;">
+                        <span class="text-center text-wrap text-break">{{ day.name }}</span>
+                    </figure>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>

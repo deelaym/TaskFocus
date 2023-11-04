@@ -26,7 +26,7 @@
                     <span>
                         <span class="h3">{{ day.name }}</span>
                         {% if not day.complete and project.edit_mode %}
-                            <a href="{% url 'project:day_edit' project.slug day.id %}?page={{ days.number }}" class="link-primary link-underline link-underline-opacity-0">
+                            <a href="{% url 'project:day_edit' project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">
                                 Edit
                             </a>
                         {% endif %}

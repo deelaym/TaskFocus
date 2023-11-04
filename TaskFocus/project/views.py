@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Day, Task
 from .forms import DayForm, TaskForm, ProjectForm
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
 from django.contrib import messages
 
@@ -41,29 +40,20 @@ def project_delete(request, slug):
     return redirect('project:index')
 
 
-def pagination(request, slug):
-    project = get_object_or_404(Project, slug=slug)
-    day_list = project.days.all()
-    paginator = Paginator(day_list, 1)
-    page_number = request.GET.get('page', 1)
-    try:
-        days = paginator.page(page_number)
-    except PageNotAnInteger:
-        days = paginator.page(1)
-    except EmptyPage:
-        days = paginator.page(paginator.num_pages)
-
-    enum = enumerate(paginator.object_list, 1)
-    return [paginator, days, enum]
-
-
 
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
+
     day_form = DayForm()
     task_form = TaskForm()
 
-    paginator, days, enum = pagination(request, slug)
+    days = project.days.all()
+    paginated_days = []
+
+    for i, day in enumerate(days):
+        if i % 7 == 0:
+            paginated_days.append([])
+        paginated_days[-1].append(day)
 
     progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
 
@@ -71,15 +61,14 @@ def project_detail(request, slug):
                                                    'day_form': day_form,
                                                    'task_form': task_form,
                                                    'days': days,
-                                                   'enum': enum,
+                                                   'paginated_days': paginated_days,
                                                    'progress': progress,
                                                    'DAY_WIDTH': DAY_WIDTH})
 
 
 def day_create(request, slug):
     project = get_object_or_404(Project, slug=slug)
-    paginator, *_ = pagination(request, slug)
-    last_page = paginator.num_pages
+
 
     if request.POST:
         day_form = DayForm(request.POST)
@@ -87,7 +76,7 @@ def day_create(request, slug):
             name = day_form.cleaned_data['name']
             day = Day(name=name, project=project)
             day.save()
-            return redirect(reverse('project:project_detail', kwargs={'slug': slug}) + f'?page={last_page + 1}')
+            return redirect('project:project_detail', slug=slug)
     else:
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
@@ -115,13 +104,12 @@ def day_complete(request, slug, day_id):
 def day_edit(request, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
     project = get_object_or_404(Project, slug=slug)
-    page = request.GET.get('page')
 
     if request.POST:
         day_form = DayForm(request.POST, instance=day)
         if day_form.is_valid():
             day_form.save()
-            return redirect(reverse('project:project_detail', kwargs={'slug': slug}) + f'?page={page}')
+            return redirect('project:project_detail', slug=slug)
         else:
             return render(request, 'day/edit.html', {'day_form': day_form,
                                                      'day': day,
@@ -178,13 +166,13 @@ def task_edit(request, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     day = get_object_or_404(Day, id=day_id)
     project = get_object_or_404(Project, slug=slug)
-    page = request.GET.get('page')
+
 
     if request.POST:
         task_form = TaskForm(request.POST, instance=task)
         if task_form.is_valid():
             task_form.save()
-            return redirect(reverse('project:project_detail', kwargs={'slug': slug}) + f'?page={page}')
+            return redirect('project:project_detail', slug=slug)
         else:
             return render(request, 'task/edit.html', {'task_form': task_form,
                                                                'task': task,
