@@ -1,4 +1,6 @@
 {% load project_tags %}
+{% load embed_video_tags %}
+
 <li class="list-group-item">
     <form method="post" action="{% url 'project:task_complete' project.slug day.id task.id %}">
         {% csrf_token %}
@@ -6,10 +8,20 @@
             <input class="form-check-input" type="checkbox" name="complete" value="True" onchange="this.form.submit()" {% if task.complete %}checked{% endif %} {% if day.complete %} disabled {% endif %}>
             <p class="form-check-label text-wrap text-break d-flex justify-content-between">
                 <span class="{% if task.complete %} text-decoration-line-through text-body-secondary {% endif %}" style="width: 88%;">
-                    {% if task.optional %}
-                        <span class="text-body-secondary">(Optional) {{ task.name|markdown }}</span>
+                    {% if task.name|is_video %}
+                        {% if task.optional %}
+                            <span class="text-body-secondary">(Optional) {{ task.name|task_text|markdown }} </span>
+                        {% else %}
+                            {{ task.name|task_text|markdown }}
+                        {% endif %}
+                        {% video task.name|task_video '100% x 420' %}
+
                     {% else %}
-                        <span>{{ task.name|markdown }}</span>
+                        {% if task.optional %}
+                            <span class="text-body-secondary">(Optional) {{ task.name|markdown }}</span>
+                        {% else %}
+                            <span>{{ task.name|markdown }}</span>
+                        {% endif %}
                     {% endif %}
                 </span>
                 {% if not day.complete and project.edit_mode %}

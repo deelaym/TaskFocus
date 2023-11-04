@@ -1,6 +1,7 @@
 from django import forms
 from .models import Project, Day, Task
 
+
 FIELD_WIDTH = 100
 
 class ProjectForm(forms.ModelForm):

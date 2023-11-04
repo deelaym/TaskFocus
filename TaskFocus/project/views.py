@@ -139,6 +139,7 @@ def day_delete(request, slug, day_id):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+
 def task_create(request, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
     project = get_object_or_404(Project, slug=slug)

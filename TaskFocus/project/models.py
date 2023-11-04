@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.utils.text import slugify
 
 
+
 class Project(models.Model):
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
@@ -26,4 +27,6 @@ class Task(models.Model):
     name = models.CharField(max_length=200)
     complete = models.BooleanField(default=False)
     optional = models.BooleanField(default=False)
+
+
 
