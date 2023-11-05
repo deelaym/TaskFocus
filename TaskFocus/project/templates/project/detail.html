@@ -13,41 +13,12 @@
         </span>
     </div>
     {% include 'includes/day/pagination.html' %}
+
     <div class="d-flex justify-content-center mb-3">
         <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ DAY_WIDTH }}%;">
             <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ progress }}%">{{ progress }}%</div>
         </div>
     </div>
 
-    {% for day in days %}
-        <div class="d-flex justify-content-center">
-            <div class="card mb-3" style="width: {{ DAY_WIDTH }}%;">
-                <div class="card-header d-flex justify-content-between">
-                    <span>
-                        <span class="h3">{{ day.name }}</span>
-                        {% if not day.complete and project.edit_mode %}
-                            <a href="{% url 'project:day_edit' project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">
-                                Edit
-                            </a>
-                        {% endif %}
-                    </span>
-                    {% if not day.complete and project.edit_mode %}
-                        <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
-                    {% endif %}
-                </div>
-                <ul class="list-group list-group-flush">
-                    {% for task in day.tasks.all %}
-                        {% include 'includes/task/complete.html' %}
-                    {% endfor %}
-                    {% if not day.complete and project.edit_mode %}
-                        {% include 'includes/task/create.html' %}
-                    {% endif %}
-                </ul>
-                <div class="card-footer d-flex justify-content-center">
-                    {% include 'includes/day/complete.html' %}
-                </div>
-            </div>
-        </div>
-    {% endfor %}
 
 {% endblock %}

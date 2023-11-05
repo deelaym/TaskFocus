@@ -44,9 +44,6 @@ def project_delete(request, slug):
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
 
-    day_form = DayForm()
-    task_form = TaskForm()
-
     days = project.days.all()
     paginated_days = []
 
@@ -54,14 +51,16 @@ def project_detail(request, slug):
         if i % 7 == 0:
             paginated_days.append([])
         paginated_days[-1].append(day)
+    range_paginated_days = range(len(paginated_days))
 
-    progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
-
+    if project.days.count():
+        progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
+    else:
+        progress = 0
     return render(request, 'project/detail.html', {'project': project,
-                                                   'day_form': day_form,
-                                                   'task_form': task_form,
                                                    'days': days,
                                                    'paginated_days': paginated_days,
+                                                   'range_paginated_days': range_paginated_days,
                                                    'progress': progress,
                                                    'DAY_WIDTH': DAY_WIDTH})
 
@@ -80,6 +79,39 @@ def day_create(request, slug):
     else:
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
+
+
+def day_detail(request, slug, day_id):
+    day = get_object_or_404(Day, id=day_id)
+    project = get_object_or_404(Project, slug=slug)
+
+    day_form = DayForm()
+    task_form = TaskForm()
+
+    days = project.days.all()
+    paginated_days = []
+
+    for i, d in enumerate(days):
+        if i % 7 == 0:
+            paginated_days.append([])
+        paginated_days[-1].append(d)
+    range_paginated_days = range(len(paginated_days) + 1)
+
+    if project.days.count():
+        progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
+    else:
+        progress = 0
+
+    return render(request, 'day/detail.html', {'day': day,
+                                               'project': project,
+                                               'day_form': day_form,
+                                               'task_form': task_form,
+                                               'days': days,
+                                               'paginated_days': paginated_days,
+                                               'range_paginated_days': range_paginated_days,
+                                               'progress': progress,
+                                               'DAY_WIDTH': DAY_WIDTH})
+
 
 
 def day_complete(request, slug, day_id):
