@@ -43,6 +43,7 @@ def project_delete(request, slug):
 
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
+    first_day = project.days.filter(complete=False).first()
 
     days = project.days.all()
     paginated_days = []
@@ -58,6 +59,7 @@ def project_detail(request, slug):
     else:
         progress = 0
     return render(request, 'project/detail.html', {'project': project,
+                                                   'day': first_day,
                                                    'days': days,
                                                    'paginated_days': paginated_days,
                                                    'range_paginated_days': range_paginated_days,
@@ -68,14 +70,14 @@ def project_detail(request, slug):
 def day_create(request, slug):
     project = get_object_or_404(Project, slug=slug)
 
-
     if request.POST:
         day_form = DayForm(request.POST)
         if day_form.is_valid():
             name = day_form.cleaned_data['name']
             day = Day(name=name, project=project)
             day.save()
-            return redirect('project:project_detail', slug=slug)
+            last_day_id = day.id
+            return redirect('project:day_detail', slug=slug, day_id=last_day_id)
     else:
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
@@ -95,7 +97,7 @@ def day_detail(request, slug, day_id):
         if i % 7 == 0:
             paginated_days.append([])
         paginated_days[-1].append(d)
-    range_paginated_days = range(len(paginated_days) + 1)
+    range_paginated_days = range(len(paginated_days))
 
     if project.days.count():
         progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
@@ -141,7 +143,7 @@ def day_edit(request, slug, day_id):
         day_form = DayForm(request.POST, instance=day)
         if day_form.is_valid():
             day_form.save()
-            return redirect('project:project_detail', slug=slug)
+            return redirect('project:day_detail', slug=slug, day_id=day_id)
         else:
             return render(request, 'day/edit.html', {'day_form': day_form,
                                                      'day': day,
@@ -156,7 +158,7 @@ def day_edit(request, slug, day_id):
 def day_delete(request, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
     day.delete()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect('project:project_detail', slug=slug)
 
 
 
@@ -204,7 +206,7 @@ def task_edit(request, slug, day_id, task_id):
         task_form = TaskForm(request.POST, instance=task)
         if task_form.is_valid():
             task_form.save()
-            return redirect('project:project_detail', slug=slug)
+            return redirect('project:day_detail', slug=slug, day_id=day_id)
         else:
             return render(request, 'task/edit.html', {'task_form': task_form,
                                                                'task': task,

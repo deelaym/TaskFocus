@@ -1,5 +1,5 @@
-<div id="carouselDark" class="carousel carousel-dark slide mb-3">
-    <div class="carousel-indicators">
+<div id="carouselDark" class="carousel carousel-dark slide mt-5 mb-3 text-center">
+    <div class="carousel-indicators" style="position: relative; bottom: 10px;">
         {% for i in range_paginated_days %}
             <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="{{ i }}" class="active" aria-current="true" aria-label="Slide {{ i }}"></button>
         {% endfor %}
@@ -7,12 +7,12 @@
     <div class="carousel-inner">
         {% with curr_day=day %}
             {% for week in paginated_days %}
-                <div class="carousel-item {% if curr_day in week %} active {% endif %}">
+                <div class="carousel-item align-top {% if curr_day in week %} active {% endif %}">
                     {% for day in week %}
                         <a href="{% url 'project:day_detail' project.slug day.id %}">
                             <div class="d-inline-block border border-primary border-2 rounded {% if curr_day == day %} bg-primary text-white {% elif day.complete %} bg-success text-white {% endif %}" style="width: 12%; height: 100px;">
                                 <span class="text-wrap text-break">
-                                    {{ day.name }}
+                                    <div class="d-flex justify-content-center" style="width: 90%;">{{ day.name }}</div>
                                 </span>
                             </div>
                         </a>
@@ -21,14 +21,18 @@
             {% endfor %}
         {% endwith %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselDark" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselDark" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
+    <div style="position: relative; left: -50px; bottom: 50px;">
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+    </div>
+    <div style="position: relative; right: -50px; bottom: 50px;">
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -3,6 +3,7 @@ from .models import Project, Day, Task
 
 
 FIELD_WIDTH = 100
+TASK_FIELD_WIDTH = 90
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -26,7 +27,7 @@ class TaskForm(forms.ModelForm):
         model = Task
         exclude = ['day']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'style': f'width: {FIELD_WIDTH}%;', 'placeholder': 'Task'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'style': f'width: {TASK_FIELD_WIDTH}%;', 'placeholder': 'Task'}),
             'optional': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'complete': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
