@@ -10,7 +10,11 @@
                 <div class="card-body">
                     <p class="d-flex align-items-center justify-content-between">
                         <span class="h2">{{ project.name }}</span>
+                        {% if project.complete %}
+                            <span class="text-body-secondary">[Completed]</span>
+                        {% endif %}
                         {{ project.timer }}
+
                         <a href="{% url 'project:project_delete' project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
                     </p>
                 </div>

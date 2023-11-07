@@ -9,6 +9,7 @@ class Project(models.Model):
     timer = models.DurationField(default=timedelta(seconds=0))
     slug = models.SlugField()
     edit_mode = models.BooleanField(default=True)
+    complete = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.slug:

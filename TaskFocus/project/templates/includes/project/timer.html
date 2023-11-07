@@ -1,0 +1,10 @@
+{% load static %}
+
+<form method="post" action="{% url 'project:project_timer' project.slug %}">
+    {% csrf_token %}
+    <div id="timer">{{ project.timer }}</div>
+    <input type="hidden" id="totalTime" name="timer" value="{{ project.timer }}">
+    <button id="startBtn" class="btn btn-primary">Start</button>
+    <button id="pauseBtn" class="btn btn-primary" disabled>Pause</button>
+    <script type="text/javascript" src="{% static 'js/timer.js' %}"></script>
+</form>

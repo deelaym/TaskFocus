@@ -1,8 +1,10 @@
+import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Day, Task
 from .forms import DayForm, TaskForm, ProjectForm
-from django.urls import reverse
 from django.contrib import messages
+from django.http import JsonResponse
+import json
 
 
 DAY_WIDTH = 85
@@ -44,6 +46,7 @@ def project_delete(request, slug):
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
     first_day = project.days.filter(complete=False).first()
+    last_day = project.days.last()
 
     days = project.days.all()
     paginated_days = []
@@ -54,17 +57,47 @@ def project_detail(request, slug):
         paginated_days[-1].append(day)
     range_paginated_days = range(len(paginated_days))
 
-    if project.days.count():
-        progress = int(project.days.filter(complete=True).count() / project.days.all().count() * 100)
+    all_days = project.days.count()
+    complete_days = project.days.filter(complete=True).count()
+    if all_days:
+        progress = int(complete_days / all_days * 100)
     else:
         progress = 0
+
     return render(request, 'project/detail.html', {'project': project,
-                                                   'day': first_day,
+                                                   'day': first_day if first_day else last_day,
                                                    'days': days,
                                                    'paginated_days': paginated_days,
                                                    'range_paginated_days': range_paginated_days,
                                                    'progress': progress,
                                                    'DAY_WIDTH': DAY_WIDTH})
+
+def project_restart(request, slug):
+    project = get_object_or_404(Project, slug=slug)
+    for day in project.days.all():
+        day.complete = False
+        for task in day.tasks.all():
+            task.complete = False
+            task.save()
+        day.save()
+    if request.POST:
+        project.complete = False
+        project.save()
+        return redirect('project:project_detail', slug=slug)
+    return render(request, 'includes/project/restart.html', {'project': project})
+
+def project_timer(request, slug):
+    project = get_object_or_404(Project, slug=slug)
+    current_time = project.timer
+
+    if request.body:
+        current_time = json.loads(request.body)
+        hours, minutes, seconds = map(int, current_time.split(':'))
+        project.timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        project.save()
+        return JsonResponse({'current_time': current_time})
+
+    return JsonResponse({'current_time': current_time})
 
 
 def day_create(request, slug):
@@ -124,6 +157,12 @@ def day_complete(request, slug, day_id):
         if tasks_mandatory.count() == tasks_mandatory.filter(complete=True).count():
             day.complete = request.POST.get('complete') == 'Complete'
             day.save()
+
+            all_days = project.days.all().count()
+            complete_days = project.days.filter(complete=True).count()
+            if all_days == complete_days:
+                project.complete = True
+                project.save()
         elif request.POST.get('complete') != 'Complete':
             day.complete = False
             day.save()
