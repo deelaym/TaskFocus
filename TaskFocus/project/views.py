@@ -42,7 +42,6 @@ def project_delete(request, slug):
     return redirect('project:index')
 
 
-
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
     first_day = project.days.filter(complete=False).first()
@@ -89,15 +88,27 @@ def project_restart(request, slug):
 def project_timer(request, slug):
     project = get_object_or_404(Project, slug=slug)
     current_time = project.timer
-
-    if request.body:
-        current_time = json.loads(request.body)
-        hours, minutes, seconds = map(int, current_time.split(':'))
+    if b'current_time' in request.body:
+        data = json.loads(request.body)
+        hours, minutes, seconds = map(int, data['current_time'].split(':'))
         project.timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
         project.save()
         return JsonResponse({'current_time': current_time})
 
     return JsonResponse({'current_time': current_time})
+
+def project_set_dates(request, slug):
+    project = get_object_or_404(Project, slug=slug)
+    date = datetime.datetime.now()
+    if request.POST:
+        for day in project.days.filter(complete=False):
+            day.date = date
+            date += datetime.timedelta(days=1)
+            day.save()
+        messages.success(request, 'Dates set successfully.', extra_tags='success')
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return render(request, 'includes/project/set_dates.html', {'project': project})
 
 
 def day_create(request, slug):
@@ -111,6 +122,8 @@ def day_create(request, slug):
             day.save()
             last_day_id = day.id
             return redirect('project:day_detail', slug=slug, day_id=last_day_id)
+        else:
+            return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
     else:
         day_form = DayForm()
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
@@ -125,6 +138,8 @@ def day_detail(request, slug, day_id):
 
     days = project.days.all()
     paginated_days = []
+
+    date = datetime.datetime.now()
 
     for i, d in enumerate(days):
         if i % 7 == 0:
@@ -141,6 +156,7 @@ def day_detail(request, slug, day_id):
                                                'project': project,
                                                'day_form': day_form,
                                                'task_form': task_form,
+                                               'date': date,
                                                'days': days,
                                                'paginated_days': paginated_days,
                                                'range_paginated_days': range_paginated_days,

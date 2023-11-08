@@ -5,7 +5,8 @@
         {% csrf_token %}
         <div class="card mb-3" style="width: {{ DAY_WIDTH }}%;">
             <div class="card-header">
-                {{ day_form.name }}
+                <p>{{ day_form.name }}</p>
+                <p>{{ day_form.date }}</p>
             </div>
             <div class="card-footer d-flex justify-content-center">
                 <input class="btn btn-primary" type="submit" value="+">

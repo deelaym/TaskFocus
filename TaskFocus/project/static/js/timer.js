@@ -41,13 +41,18 @@ function updateTime() {
 startBtn.addEventListener('click', () => {
     interval = setInterval(updateTime, 1000);
     startBtn.disabled = true;
+    startBtn.style.display = 'none';
     pauseBtn.disabled = false;
+    pauseBtn.style.display = 'inline';
+
 });
 
 pauseBtn.addEventListener('click', () => {
     clearInterval(interval);
     startBtn.disabled = false;
+    startBtn.style.display = 'inline';
     pauseBtn.disabled = true;
+    pauseBtn.style.display = 'none'
     current_time = timer.textContent;
 
     fetch('timer/', {
@@ -56,7 +61,7 @@ pauseBtn.addEventListener('click', () => {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify(current_time)
+        body: JSON.stringify({current_time: current_time})
         })
         .then(response => response.json())
         .then(current_time => {

@@ -11,6 +11,7 @@ urlpatterns = [
     path('project/<slug:slug>/edit_mode/', views.project_edit_mode, name='project_edit_mode'),
     path('project/<slug:slug>/restart/', views.project_restart, name='project_restart'),
     path('project/<slug:slug>/timer/', views.project_timer, name='project_timer'),
+    path('project/<slug:slug>/set_dates/', views.project_set_dates, name='project_set_dates'),
     path('project/<slug:slug>/day/create/', views.day_create, name='day_create'),
     path('project/<slug:slug>/day/<int:day_id>/', views.day_detail, name='day_detail'),
     path('project/<slug:slug>/day/<int:day_id>/complete/', views.day_complete, name='day_complete'),

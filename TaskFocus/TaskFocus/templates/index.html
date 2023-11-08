@@ -13,7 +13,7 @@
                         {% if project.complete %}
                             <span class="text-body-secondary">[Completed]</span>
                         {% endif %}
-                        {{ project.timer }}
+                        {{ project.timer_string }}
 
                         <a href="{% url 'project:project_delete' project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
                     </p>

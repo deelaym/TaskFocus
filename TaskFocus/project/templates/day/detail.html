@@ -13,6 +13,9 @@
                             Edit
                         </a>
                     {% endif %}
+                    {% if day.date %}
+                        <p class="{% if date.day <= day.date.day and date.month <= day.date.month and date.year <= day.date.year or day.complete %} text-body-secondary {% else %} text-danger {% endif %}">{{ day.date }}</p>
+                    {% endif %}
                 </span>
                 {% if not day.complete and project.edit_mode %}
                     <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>

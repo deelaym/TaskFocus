@@ -16,11 +16,22 @@ class Project(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    def timer_string(self):
+        time = str(self.timer).replace(', ', ':').split(':')
+
+        if len(time) == 4:
+            time[0] = time[0].split()[0]
+            time_string = f'{int(time[0]) * 24 + int(time[1])}:{time[2].zfill(2)}:{time[3].zfill(2)}'
+        else:
+            time_string = f'{time[0].zfill(2)}:{time[1].zfill(2)}:{time[2].zfill(2)}'
+        return time_string
+
 
 class Day(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='days')
     name = models.CharField(max_length=30, blank=True, default='Day')
     complete = models.BooleanField(default=False)
+    date = models.DateField(blank=True, null=True)
 
 
 class Task(models.Model):

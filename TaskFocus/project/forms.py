@@ -16,9 +16,10 @@ class ProjectForm(forms.ModelForm):
 class DayForm(forms.ModelForm):
     class Meta:
         model = Day
-        fields = ['name']
+        fields = ['name', 'date']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'style': f'width: {FIELD_WIDTH}%;'}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
                   }
 
 
