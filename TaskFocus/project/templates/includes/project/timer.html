@@ -14,8 +14,8 @@
         </svg>
     </button>
     
-    <span id="timer">{{ project.timer_string }}</span>
+    <span id="timer" class="fs-5">{{ project.timer_string }}</span>
     <input type="hidden" id="totalTime" name="timer" value="{{ project.timer }}">
-
+<input type="hidden" id="slug" value="{{ project.slug }}">
     <script type="text/javascript" src="{% static 'js/timer.js' %}"></script>
 </form>

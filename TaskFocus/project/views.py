@@ -5,14 +5,23 @@ from .forms import DayForm, TaskForm, ProjectForm
 from django.contrib import messages
 from django.http import JsonResponse
 import json
+from django.views.generic import ListView
 
 
 DAY_WIDTH = 85
 
 
 def index(request):
-    projects = Project.objects.all()
-    return render(request, 'index.html', {'projects': projects})
+    return render(request, 'index.html')
+
+
+class ProjectList(ListView):
+    model = Project
+    template_name = 'project/list.html'
+    paginate_by = 5
+    context_object_name = 'projects'
+
+
 
 def project_create(request):
     if request.POST:
