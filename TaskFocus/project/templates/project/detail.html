@@ -3,4 +3,7 @@
 
 {% block content %}
     {% include 'includes/project/detail.html' %}
+    {% if not project.days.all %}
+        <p class="fs-4">Add your first day!</p>
+    {% endif %}
 {% endblock %}

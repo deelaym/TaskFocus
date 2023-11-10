@@ -3,6 +3,7 @@ let timer = document.getElementById('timer');
 let startBtn = document.getElementById('startBtn');
 let pauseBtn = document.getElementById('pauseBtn');
 let slug = document.getElementById('slug').value;
+let username = document.getElementById('username').value;
 
 let totalTime = initialTotalTime.replace(',', ':').split(':');
 let days;
@@ -56,7 +57,7 @@ pauseBtn.addEventListener('click', () => {
     pauseBtn.style.display = 'none'
     current_time = timer.textContent;
 
-    fetch(`/project/${slug}/timer/`, {
+    fetch(`/${username}/project/${slug}/timer/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

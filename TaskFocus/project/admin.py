@@ -3,7 +3,7 @@ from .models import Project, Day, Task
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'timer', 'edit_mode']
+    list_display = ['name', 'user', 'timer', 'edit_mode']
     prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(Day)

@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'project:task_create' project.slug day.id  %}">
+<form method="post" action="{% url 'project:task_create' request.user.username project.slug day.id  %}">
     {% csrf_token %}
     <li class="list-group-item">
         <p class="d-flex justify-content-between">{{ task_form.name }} <span><input class="btn btn-primary" type="submit" value="+"></span></p>

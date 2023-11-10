@@ -2,6 +2,17 @@
 
 
 {% block content %}
-    <h2>Welcome!</h2>
-    <p></p>
+    <h1>Welcome to TaskFocus!</h1>
+    <p class="fs-4"><strong>TaskFocus</strong> is a task management tool that helps you stay organized and productive.</p>
+    <p class="fs-4">With TaskFocus, you can create projects, tasks, track project progress, and stay focused on tasks with the built-in timer.</p>
+
+    {% if not request.user.is_authenticated %}
+        <p class="fs-4">Start using TaskFocus today and supercharge your productivity!</p>
+        <p class="fs-4">
+            <a href="{% url 'account:login' %}">Login</a> or
+            <a href="{% url 'account:register' %}">Sign Up</a>
+        </p>
+    {% else %}
+        <p class="fs-4">View your <a href="{% url 'project:project_list' request.user.username %}">projects</a>.</p>
+    {% endif %}
 {% endblock %}

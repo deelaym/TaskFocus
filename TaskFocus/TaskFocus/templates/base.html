@@ -14,10 +14,10 @@
 
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'project:index' %}">TaskFocus</a>
+            <a class="navbar-brand" href="{% url 'index' %}">TaskFocus</a>
             <div class="d-flex justify-content-end">
                 {% if request.user.is_authenticated %}
-                    <div class="me-3 navbar-brand">{{ request.user.username }}</div>
+                    <div class="me-3 navbar-brand"><a href="{% url 'account:account_settings' request.user %}" class="text-white link-underline link-underline-opacity-10">{{ request.user.username }}</a></div>
                     <a href="{% url 'logout' %}"><button class="btn btn-primary me-3" type="submit">Log Out</button></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -36,7 +36,7 @@
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="{% url 'project:project_list' %}">Projects</a>
+                                <a class="nav-link active" aria-current="page" href="{% url 'project:project_list' request.user.username %}">Projects</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#">Calendar</a>

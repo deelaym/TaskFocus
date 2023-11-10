@@ -1,25 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="mb-3"><a href="{% url 'project:project_create' %}">
-        <input type="button" class="btn btn-primary" value="Create a project">
-    </a></div>
-    {% for project in projects %}
-        <div class="card mb-3">
-            <a href="{% url 'project:project_detail' project.slug %}" class="link-dark link-underline link-underline-opacity-0">
-                <div class="card-body">
-                    <p class="d-flex align-items-center justify-content-between">
-                        <span class="h2">{{ project.name }}</span>
-                        {% if project.complete %}
-                            <span class="text-body-secondary">[Completed]</span>
-                        {% endif %}
-                        {{ project.timer_string }}
+    {% if request.user.is_authenticated %}
+        <div class="mb-3"><a href="{% url 'project:project_create' request.user.username %}">
+            <input type="button" class="btn btn-primary" value="Create a project">
+        </a></div>
+        {% for project in projects %}
+            <div class="card mb-3">
+                <a href="{% url 'project:project_detail' request.user.username project.slug %}" class="link-dark link-underline link-underline-opacity-0">
+                    <div class="card-body">
+                        <p class="d-flex align-items-center justify-content-between">
+                            <span class="h2">{{ project.name }}</span>
+                            {% if project.complete %}
+                                <span class="text-body-secondary">[Completed]</span>
+                            {% endif %}
+                            {{ project.timer_string }}
 
-                        <a href="{% url 'project:project_delete' project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
-                    </p>
-                </div>
-            </a>
-        </div>
-    {% endfor %}
-    {% include 'includes/project/pagination.html' %}
+                            <a href="{% url 'project:project_delete' request.user.username project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                        </p>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <p>There are no projects here yet.</p>
+        {% endfor %}
+        {% include 'includes/project/pagination.html' %}
+    {% endif %}
 {% endblock %}

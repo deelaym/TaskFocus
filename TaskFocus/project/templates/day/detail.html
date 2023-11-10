@@ -7,9 +7,9 @@
         <div class="card mb-3" style="width: {{ DAY_WIDTH }}%;">
             <div class="card-header d-flex justify-content-between">
                 <span>
-                    <span class="h3">{{ day.name }}</span>
+                    <span class="h3 text-break text-wrap">{{ day.name }}</span>
                     {% if not day.complete and project.edit_mode %}
-                        <a href="{% url 'project:day_edit' project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">
+                        <a href="{% url 'project:day_edit' request.user.username project.slug day.id %}" class="link-primary link-underline link-underline-opacity-0">
                             Edit
                         </a>
                     {% endif %}
@@ -18,7 +18,7 @@
                     {% endif %}
                 </span>
                 {% if not day.complete and project.edit_mode %}
-                    <a href="{% url 'project:day_delete' project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    <a href="{% url 'project:day_delete' request.user.username project.slug day.id %}" class="d-flex justify-content-end"><button type="button" class="btn-close" aria-label="Close"></button></a>
                 {% endif %}
             </div>
             <ul class="list-group list-group-flush">

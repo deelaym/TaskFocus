@@ -6,37 +6,42 @@ from django.contrib import messages
 from django.http import JsonResponse
 import json
 from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 DAY_WIDTH = 85
 
 
-def index(request):
-    return render(request, 'index.html')
-
-
-class ProjectList(ListView):
-    model = Project
+class ProjectList(LoginRequiredMixin, ListView):
     template_name = 'project/list.html'
     paginate_by = 5
     context_object_name = 'projects'
 
+    def get_queryset(self):
+        return Project.objects.filter(user=self.request.user)
 
 
-def project_create(request):
+@login_required
+def project_create(request, username):
     if request.POST:
-        project_form = ProjectForm(request.POST)
+        project_form = ProjectForm(request.POST, user=request.user)
         if project_form.is_valid():
-            project = Project(name=project_form.cleaned_data['name'])
+            project = Project(name=project_form.cleaned_data['name'], user=request.user)
             project.save()
-            return redirect('project:project_detail', slug=project.slug)
+            return redirect('project:project_detail', username=request.user.username, slug=project.slug)
+        else:
+            for field in project_form:
+                messages.error(request, field.errors, extra_tags='danger')
+            return render(request, 'project/create.html', {'project_form': project_form})
     else:
         project_form = ProjectForm()
         return render(request, 'project/create.html', {'project_form': project_form})
 
 
-def project_edit_mode(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+@login_required
+def project_edit_mode(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     if request.POST:
         project.edit_mode = request.POST.get('edit_mode') == 'Edit mode on'
         project.save()
@@ -45,14 +50,16 @@ def project_edit_mode(request, slug):
         return render(request, 'includes/project/edit_mode.html', {'project': project})
 
 
-def project_delete(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+@login_required
+def project_delete(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     project.delete()
-    return redirect('project:index')
+    return redirect('project:project_list', username=request.user.username)
 
 
-def project_detail(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+@login_required
+def project_detail(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     first_day = project.days.filter(complete=False).first()
     last_day = project.days.last()
 
@@ -80,8 +87,10 @@ def project_detail(request, slug):
                                                    'progress': progress,
                                                    'DAY_WIDTH': DAY_WIDTH})
 
-def project_restart(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+
+@login_required
+def project_restart(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     for day in project.days.all():
         day.complete = False
         for task in day.tasks.all():
@@ -91,11 +100,13 @@ def project_restart(request, slug):
     if request.POST:
         project.complete = False
         project.save()
-        return redirect('project:project_detail', slug=slug)
+        return redirect('project:project_detail', username=request.user.username, slug=slug)
     return render(request, 'includes/project/restart.html', {'project': project})
 
-def project_timer(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+
+@login_required
+def project_timer(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     current_time = project.timer
     if b'current_time' in request.body:
         data = json.loads(request.body)
@@ -106,8 +117,10 @@ def project_timer(request, slug):
 
     return JsonResponse({'current_time': current_time})
 
-def project_set_dates(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+
+@login_required
+def project_set_dates(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     date = datetime.datetime.now()
     if request.POST:
         for day in project.days.filter(complete=False):
@@ -120,8 +133,9 @@ def project_set_dates(request, slug):
         return render(request, 'includes/project/set_dates.html', {'project': project})
 
 
-def day_create(request, slug):
-    project = get_object_or_404(Project, slug=slug)
+@login_required
+def day_create(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
     if request.POST:
         day_form = DayForm(request.POST)
@@ -130,7 +144,7 @@ def day_create(request, slug):
             day = Day(name=name, project=project)
             day.save()
             last_day_id = day.id
-            return redirect('project:day_detail', slug=slug, day_id=last_day_id)
+            return redirect('project:day_detail', username=request.user.username, slug=slug, day_id=last_day_id)
         else:
             return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
     else:
@@ -138,9 +152,10 @@ def day_create(request, slug):
         return render(request, 'day/create.html', {'day_form': day_form, 'project': project})
 
 
-def day_detail(request, slug, day_id):
+@login_required
+def day_detail(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
     day_form = DayForm()
     task_form = TaskForm()
@@ -173,10 +188,10 @@ def day_detail(request, slug, day_id):
                                                'DAY_WIDTH': DAY_WIDTH})
 
 
-
-def day_complete(request, slug, day_id):
+@login_required
+def day_complete(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     if request.POST:
         tasks_mandatory = day.tasks.filter(optional=False)
         if tasks_mandatory.count() == tasks_mandatory.filter(complete=True).count():
@@ -199,15 +214,16 @@ def day_complete(request, slug, day_id):
                                                               'project': project})
 
 
-def day_edit(request, slug, day_id):
+@login_required
+def day_edit(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
     if request.POST:
         day_form = DayForm(request.POST, instance=day)
         if day_form.is_valid():
             day_form.save()
-            return redirect('project:day_detail', slug=slug, day_id=day_id)
+            return redirect('project:day_detail', username=request.user.username, slug=slug, day_id=day_id)
         else:
             return render(request, 'day/edit.html', {'day_form': day_form,
                                                      'day': day,
@@ -219,16 +235,17 @@ def day_edit(request, slug, day_id):
                                                  'project': project})
 
 
-def day_delete(request, slug, day_id):
+@login_required
+def day_delete(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
     day.delete()
-    return redirect('project:project_detail', slug=slug)
+    return redirect('project:project_detail', username=request.user.username, slug=slug)
 
 
-
-def task_create(request, slug, day_id):
+@login_required
+def task_create(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     if request.POST:
         task_form = TaskForm(request.POST)
         if task_form.is_valid():
@@ -245,9 +262,10 @@ def task_create(request, slug, day_id):
                                                              'project': project})
 
 
-def task_complete(request, slug, day_id, task_id):
+@login_required
+def task_complete(request, username, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
     day = get_object_or_404(Day, id=day_id)
     if request.POST:
         task.complete = request.POST.get('complete') == 'True'
@@ -260,17 +278,18 @@ def task_complete(request, slug, day_id, task_id):
                        'day': day})
 
 
-def task_edit(request, slug, day_id, task_id):
+@login_required
+def task_edit(request, username, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     day = get_object_or_404(Day, id=day_id)
-    project = get_object_or_404(Project, slug=slug)
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
 
     if request.POST:
         task_form = TaskForm(request.POST, instance=task)
         if task_form.is_valid():
             task_form.save()
-            return redirect('project:day_detail', slug=slug, day_id=day_id)
+            return redirect('project:day_detail', username=request.user.username, slug=slug, day_id=day_id)
         else:
             return render(request, 'task/edit.html', {'task_form': task_form,
                                                                'task': task,
@@ -285,7 +304,8 @@ def task_edit(request, slug, day_id, task_id):
                                                   'DAY_WIDTH': DAY_WIDTH})
 
 
-def task_delete(request, slug, day_id, task_id):
+@login_required
+def task_delete(request, username, slug, day_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     task.delete()
     return redirect(request.META.get('HTTP_REFERER'))

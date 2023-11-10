@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'project:day_complete' project.slug day.id %}">
+<form method="post" action="{% url 'project:day_complete' request.user.username project.slug day.id %}">
     {% csrf_token %}
     {% if day.complete %}
         <input class="btn btn-secondary" type="submit" name="incomplete" value="Incomplete">

@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'project:project_edit_mode' project.slug %}" style="display: inline;">
+<form method="post" action="{% url 'project:project_edit_mode'  request.user.username project.slug %}" style="display: inline;">
     {% csrf_token %}
     {% if project.edit_mode %}
         <input type="submit" class="btn btn-dark" name="edit_mode" value="Edit mode off">

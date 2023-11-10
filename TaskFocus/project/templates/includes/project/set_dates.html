@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'project:project_set_dates' project.slug %}">
+<form method="post" action="{% url 'project:project_set_dates' request.user.username project.slug %}">
     {% csrf_token %}
     <input type="submit" class="btn btn-primary" name="project_set_dates" value="Set dates">
 </form>

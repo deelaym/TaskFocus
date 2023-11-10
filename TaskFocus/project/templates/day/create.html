@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form method="post" action="{% url 'project:day_create' project.slug %}">
+    <form method="post" action="{% url 'project:day_create' request.user.username project.slug %}">
         {% csrf_token %}
         <div class="card mb-3" style="width: {{ DAY_WIDTH }}%;">
             <div class="card-header">
@@ -9,7 +9,7 @@
                 <p>{{ day_form.date }}</p>
             </div>
             <div class="card-footer d-flex justify-content-center">
-                <input class="btn btn-primary" type="submit" value="+">
+                <input class="btn btn-primary" type="submit" value="Submit">
             </div>
         </div>
     </form>

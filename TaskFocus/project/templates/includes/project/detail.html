@@ -24,7 +24,7 @@
 <div class="d-flex justify-content-end">
     {% if not project.complete %}
         {% if project.edit_mode %}
-            <a href="{% url 'project:day_create' project.slug %}"><input type="button" class="btn btn-primary" value="Add day"></a>
+            <a href="{% url 'project:day_create' request.user.username project.slug %}"><input type="button" class="btn btn-primary" value="Add day"></a>
         {% endif %}
     {% else %}
         {% include 'includes/project/restart.html' %}
@@ -34,7 +34,7 @@
 
 {% include 'includes/day/pagination.html' %}
 
-<div class="d-flex justify-content-center mb-3">
+<div class="d-flex justify-content-center mb-3 mt-3">
     <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ DAY_WIDTH }}%;">
         <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ progress }}%">{{ progress }}%</div>
     </div>

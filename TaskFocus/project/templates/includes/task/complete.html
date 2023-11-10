@@ -2,7 +2,7 @@
 {% load embed_video_tags %}
 
 <li class="list-group-item">
-    <form method="post" action="{% url 'project:task_complete' project.slug day.id task.id %}">
+    <form method="post" action="{% url 'project:task_complete' request.user.username project.slug day.id task.id %}">
         {% csrf_token %}
         <div class="form-check">
             <input class="form-check-input" type="checkbox" name="complete" value="True" onchange="this.form.submit()" {% if task.complete %}checked{% endif %} {% if day.complete %} disabled {% endif %}>
@@ -26,8 +26,8 @@
                 </span>
                 {% if not day.complete and project.edit_mode %}
                     <span class="d-flex align-items-between">
-                        <a href="{% url 'project:task_edit' project.slug day.id task.id %}" class="link-primary link-underline link-underline-opacity-0">Edit</a>
-                        <a href="{% url 'project:task_delete' project.slug day.id task.id %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                        <a href="{% url 'project:task_edit' request.user.username project.slug day.id task.id %}" class="link-primary link-underline link-underline-opacity-0">Edit</a>
+                        <a href="{% url 'project:task_delete' request.user.username project.slug day.id task.id %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
                     </span>
                 {% endif %}
             </p>

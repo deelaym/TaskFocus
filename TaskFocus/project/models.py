@@ -1,10 +1,12 @@
 from django.db import models
 from datetime import timedelta
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 
 
 class Project(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
     slug = models.SlugField()
