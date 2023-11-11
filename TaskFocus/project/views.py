@@ -311,3 +311,17 @@ def task_delete(request, username, slug, day_id, task_id):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required
+def projects_reports(request, username):
+    projects = Project.objects.filter(user=request.user.id)
+    total_hours = sum([project.timer.total_seconds() for project in projects]) // 3600
+    return render(request, 'project/reports.html', {'total_hours': total_hours})
+
+
+@login_required
+def projects_doughnut_chart(request, username):
+    projects = Project.objects.filter(user=request.user.id)
+    labels = [project.name for project in projects]
+    data = [project.timer.total_seconds() // 3600 for project in projects]
+    projects = {'labels': labels, 'data': data}
+    return JsonResponse(projects)

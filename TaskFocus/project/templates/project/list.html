@@ -7,19 +7,39 @@
         </a></div>
         {% for project in projects %}
             <div class="card mb-3">
-                <a href="{% url 'project:project_detail' request.user.username project.slug %}" class="link-dark link-underline link-underline-opacity-0">
-                    <div class="card-body">
-                        <p class="d-flex align-items-center justify-content-between">
+                <div class="card-body">
+                    <p class="d-flex align-items-center justify-content-between">
+                        <a href="{% url 'project:project_detail' request.user.username project.slug %}" class="link-dark link-underline link-underline-opacity-0">
                             <span class="h2">{{ project.name }}</span>
                             {% if project.complete %}
                                 <span class="text-body-secondary">[Completed]</span>
                             {% endif %}
                             {{ project.timer_string }}
+                        </a>
 
-                            <a href="{% url 'project:project_delete' request.user.username project.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
-                        </p>
-                    </div>
-                </a>
+                        <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="modal" data-bs-target="#DeleteProjectModal{{ project.id }}"></button>
+
+                        <div class="modal fade" id="DeleteProjectModal{{ project.id }}" tabindex="-1" aria-labelledby="DeleteProjectModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="DeleteProjectModalLabel">Delete the project</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete the project "{{ project.name }}"?
+                                    </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <a href="{% url 'project:project_delete' request.user.username project.slug %}">
+                                            <button type="button" class="btn btn-primary">Delete</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
             </div>
         {% empty %}
             <p>There are no projects here yet.</p>

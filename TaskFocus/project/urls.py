@@ -22,6 +22,9 @@ urlpatterns = [
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/complete/', views.task_complete, name='task_complete'),
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/edit/', views.task_edit, name='task_edit'),
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/delete/', views.task_delete, name='task_delete'),
+path('reports/', views.projects_reports, name='projects_reports'),
+    path('reports/doughnut/', views.projects_doughnut_chart, name='doughnut_chart'),
+
 
 
 ]

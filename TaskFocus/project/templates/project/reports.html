@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.js"></script>
+    <input type="hidden" id="username" value="{{ request.user.username }}">
+    <input type="hidden" id="total_hours" value="{{ total_hours }}">
+    <script src="{% static 'js/doughnut_chart.js' %}"></script>
+    <canvas id="doughnut-chart"></canvas>
+{% endblock %}
