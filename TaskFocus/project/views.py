@@ -27,7 +27,8 @@ def project_create(request, username):
     if request.POST:
         project_form = ProjectForm(request.POST, user=request.user)
         if project_form.is_valid():
-            project = Project(name=project_form.cleaned_data['name'], user=request.user)
+            cd = project_form.cleaned_data
+            project = Project(name=cd['name'], user=request.user, color=cd['color'])
             project.save()
             return redirect('project:project_detail', username=request.user.username, slug=project.slug)
         else:
@@ -37,6 +38,23 @@ def project_create(request, username):
     else:
         project_form = ProjectForm()
         return render(request, 'project/create.html', {'project_form': project_form})
+
+
+@login_required
+def project_edit(request, username, slug):
+    project = get_object_or_404(Project, slug=slug, user=request.user.id)
+    if request.POST:
+        project_form = ProjectForm(request.POST, instance=project)
+        if project_form.is_valid():
+            project_form.save()
+            return redirect('project:project_detail', username=request.user.username, slug=slug)
+        else:
+            return render(request, 'project/edit.html', {'project_form': project_form,
+                                                     'project': project})
+    else:
+        project_form = ProjectForm(instance=project)
+        return render(request, 'project/edit.html', {'project_form': project_form,
+                                                 'project': project})
 
 
 @login_required
@@ -323,5 +341,6 @@ def projects_doughnut_chart(request, username):
     projects = Project.objects.filter(user=request.user.id)
     labels = [project.name for project in projects]
     data = [project.timer.total_seconds() // 3600 for project in projects]
-    projects = {'labels': labels, 'data': data}
+    colors = [project.color for project in projects]
+    projects = {'labels': labels, 'data': data, 'colors': colors}
     return JsonResponse(projects)

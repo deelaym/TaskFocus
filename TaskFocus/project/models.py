@@ -12,6 +12,7 @@ class Project(models.Model):
     slug = models.SlugField()
     edit_mode = models.BooleanField(default=True)
     complete = models.BooleanField(default=False)
+    color = models.CharField(max_length=7, default='#994299')
 
     def save(self, *args, **kwargs):
         if not self.slug:

@@ -12,9 +12,10 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ['name']
+        fields = ['name', 'color']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'style': f'width: {FIELD_WIDTH}%;'}),
+            'color': forms.TextInput(attrs={'class': 'form-control', 'type': 'color', 'style': f'width: {FIELD_WIDTH}%;'})
         }
 
     def clean_name(self):

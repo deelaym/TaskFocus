@@ -10,14 +10,19 @@
                 <div class="card-body">
                     <p class="d-flex align-items-center justify-content-between">
                         <a href="{% url 'project:project_detail' request.user.username project.slug %}" class="link-dark link-underline link-underline-opacity-0">
+                            <span class="btn" style="background-color: {{ project.color }}; height: 42px; width: 30px;"></span>
                             <span class="h2">{{ project.name }}</span>
                             {% if project.complete %}
                                 <span class="text-body-secondary">[Completed]</span>
                             {% endif %}
                             {{ project.timer_string }}
                         </a>
-
-                        <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="modal" data-bs-target="#DeleteProjectModal{{ project.id }}"></button>
+                        <span>
+                            <a href="{% url 'project:project_edit' request.user.username project.slug %}">
+                                Edit
+                            </a>
+                            <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="modal" data-bs-target="#DeleteProjectModal{{ project.id }}"></button>
+                        </span>
 
                         <div class="modal fade" id="DeleteProjectModal{{ project.id }}" tabindex="-1" aria-labelledby="DeleteProjectModalLabel" aria-hidden="true">
                             <div class="modal-dialog">

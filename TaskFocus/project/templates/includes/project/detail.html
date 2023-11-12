@@ -1,5 +1,9 @@
-<h2 class="h2">{{ project.name }}</h2>
-<div class="d-flex justify-content-between mb-3">
+<span class="btn" style="background-color: {{ project.color }}; height: 42px; width: 30px;"></span>
+<span class="h2">{{ project.name }}</span>
+{% if not project.complete and project.edit_mode %}
+    <a href="{% url 'project:project_edit' request.user.username project.slug %}">Edit</a>
+{% endif %}
+<div class="d-flex justify-content-between mb-3 mt-3">
     {% include 'includes/project/timer.html' %}
 
     {% if not project.complete %}

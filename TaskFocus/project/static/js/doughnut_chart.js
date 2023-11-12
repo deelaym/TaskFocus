@@ -9,6 +9,7 @@ let hours = parseInt(document.getElementById('total_hours').value);
             let response = JSON.parse(xhr.responseText);
             let labels = response.labels;
             let data = response.data;
+            let colors = response.colors;
 
     new Chart(document.getElementById("doughnut-chart"), {
         type: "doughnut",
@@ -16,12 +17,7 @@ let hours = parseInt(document.getElementById('total_hours').value);
             labels: labels,
             datasets: [{
             data: data,
-            backgroundColor: [
-                "#85004B",
-                "#FFAA00",
-                "#1240AB",
-                "#CD0074"
-            ],
+            backgroundColor: colors,
             borderColor: "transparent"
             }]
         },
