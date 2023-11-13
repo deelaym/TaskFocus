@@ -126,12 +126,27 @@ def project_restart(request, username, slug):
 def project_timer(request, username, slug):
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
     current_time = project.timer
-    if b'current_time' in request.body:
+    if b'current_time' in request.body and b'duration' in request.body:
         data = json.loads(request.body)
         hours, minutes, seconds = map(int, data['current_time'].split(':'))
         project.timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+
+        date1, date2 = data['duration'][0], data['duration'][1]
+        time1 = datetime.time(hour=date1[3], minute=date1[4], second=date1[5])
+        time2 = datetime.time(hour=date2[3], minute=date2[4], second=date2[5])
+        date1 = datetime.date(day=date1[0], month=date1[1], year=date1[2])
+        date2 = datetime.date(day=date2[0], month=date2[1], year=date2[2])
+
+        if date1 != date2:
+            durations = {date1: [str(time1), str(datetime.time(hour=23, minute=59, second=59))],
+                         date2: [str(datetime.time(hour=0, minute=0, second=0)), str(time2)]}
+            project.time_periods.setdefault(str(date1), []).append(durations[date1])
+            project.time_periods.setdefault(str(date2), []).append(durations[date2])
+        else:
+            durations = {date1: [str(time1), str(time2)]}
+            project.time_intervals.setdefault(str(date1), []).append(durations[date1])
         project.save()
-        return JsonResponse({'current_time': current_time})
+        return JsonResponse({'current_time': current_time, 'duration': data['duration']})
 
     return JsonResponse({'current_time': current_time})
 

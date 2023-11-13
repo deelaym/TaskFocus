@@ -9,6 +9,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
+    time_intervals = models.JSONField(default=dict())
     slug = models.SlugField()
     edit_mode = models.BooleanField(default=True)
     complete = models.BooleanField(default=False)

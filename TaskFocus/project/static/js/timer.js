@@ -11,6 +11,9 @@ let hours;
 let minutes;
 let seconds;
 
+let startTime;
+let stopTime;
+
 if (totalTime.length === 4) {
     days = parseInt(totalTime[0]);
     hours = parseInt(totalTime[1]) + days * 24;
@@ -41,12 +44,20 @@ function updateTime() {
 }
 
 startBtn.addEventListener('click', () => {
+    startTime = new Date();
     interval = setInterval(updateTime, 1000);
     startBtn.disabled = true;
     startBtn.style.display = 'none';
     pauseBtn.disabled = false;
     pauseBtn.style.display = 'inline';
 
+    let d = startTime.getDate();
+    let m = startTime.getMonth() + 1;
+    let y = startTime.getFullYear();
+    let h = startTime.getHours();
+    let min = startTime.getMinutes();
+    let s = startTime.getSeconds();
+    startTime = [d, m, y, h, min, s]
 });
 
 pauseBtn.addEventListener('click', () => {
@@ -56,6 +67,16 @@ pauseBtn.addEventListener('click', () => {
     pauseBtn.disabled = true;
     pauseBtn.style.display = 'none'
     current_time = timer.textContent;
+    stopTime = new Date();
+
+    let d = stopTime.getDate();
+    let m = stopTime.getMonth() + 1;
+    let y = stopTime.getFullYear();
+    let h = stopTime.getHours();
+    let min = stopTime.getMinutes();
+    let s = stopTime.getSeconds();
+    stopTime = [d, m, y, h, min, s]
+
 
     fetch(`/${username}/project/${slug}/timer/`, {
         method: 'POST',
@@ -63,7 +84,7 @@ pauseBtn.addEventListener('click', () => {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify({current_time: current_time})
+        body: JSON.stringify({current_time: current_time, duration: [startTime, stopTime]})
         })
         .then(response => response.json())
         .then(current_time => {
