@@ -132,19 +132,29 @@ def project_timer(request, username, slug):
         project.timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
         date1, date2 = data['duration'][0], data['duration'][1]
-        time1 = datetime.time(hour=date1[3], minute=date1[4], second=date1[5])
-        time2 = datetime.time(hour=date2[3], minute=date2[4], second=date2[5])
-        date1 = datetime.date(day=date1[0], month=date1[1], year=date1[2])
-        date2 = datetime.date(day=date2[0], month=date2[1], year=date2[2])
+        time1 = datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=date1[3], minute=date1[4], second=date1[5])
+        time2 = datetime.datetime(day=date2[0], month=date2[1], year=date2[2], hour=date2[3], minute=date2[4], second=date2[5])
+        date_first = datetime.date(day=date1[0], month=date1[1], year=date1[2])
+        date_second = datetime.date(day=date2[0], month=date2[1], year=date2[2])
+        PX = 42
 
-        if date1 != date2:
-            durations = {date1: [str(time1), str(datetime.time(hour=23, minute=59, second=59))],
-                         date2: [str(datetime.time(hour=0, minute=0, second=0)), str(time2)]}
-            project.time_periods.setdefault(str(date1), []).append(durations[date1])
-            project.time_periods.setdefault(str(date2), []).append(durations[date2])
+        if date_first != date_second:
+            delta1 = (datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=23, minute=59, second=59) - time1).total_seconds() * PX / 3600
+            time3 = datetime.datetime(day=date2[0], month=date2[1], year=date2[2], hour=0, minute=0, second=0)
+            delta2 = (time2 - time3).total_seconds() * PX / 3600
+
+            time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600
+
+            durations = {date_first: [time1, delta1],
+                         date_second: [0, delta2]}
+            project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
+            project.time_intervals.setdefault(str(date_second), []).append(durations[date_second])
         else:
-            durations = {date1: [str(time1), str(time2)]}
-            project.time_intervals.setdefault(str(date1), []).append(durations[date1])
+            delta = (time2 - time1).total_seconds() * PX / 3600
+            time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600
+            durations = {date_first: [time1, delta]}
+            project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
+
         project.save()
         return JsonResponse({'current_time': current_time, 'duration': data['duration']})
 
@@ -359,3 +369,15 @@ def projects_doughnut_chart(request, username):
     colors = [project.color for project in projects]
     projects = {'labels': labels, 'data': data, 'colors': colors}
     return JsonResponse(projects)
+
+
+@login_required
+def projects_time_intervals(request, username, date):
+    range24 = [str(i).zfill(2)for i in range(24)]
+    time_intervals = dict()
+    for project in Project.objects.filter(user=request.user.id):
+        if date in project.time_intervals:
+            time_intervals[project] = project.time_intervals[date]
+    return render(request, 'project/time_intervals.html', {'time_intervals': time_intervals,
+                                                           'date': date,
+                                                           'range24': range24})

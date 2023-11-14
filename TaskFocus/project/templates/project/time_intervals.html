@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2> date </h2>
+
+    <div class="mb-5" style="height: 1008px; position: relative;">
+        <hr style="margin-bottom: 1px">
+        {% for i in range24 %}
+        {{ i }}:00 <hr style="margin-bottom: 1px">
+        {% endfor %}
+        {% for project, intervals in time_intervals.items %}
+            {% for interval in intervals %}
+                <div class="text-white" style="background-color: {{ project.color }}; height: {{ interval.1 }}px; width:92%;
+                display: flex; justify-content: center; position: absolute; top: {{ interval.0 }}px;
+                left: 7%; border-radius: 7px;">
+                    {{ project.name }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

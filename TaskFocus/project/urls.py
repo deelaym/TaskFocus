@@ -25,7 +25,6 @@ urlpatterns = [
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/delete/', views.task_delete, name='task_delete'),
     path('reports/', views.projects_reports, name='projects_reports'),
     path('reports/doughnut/', views.projects_doughnut_chart, name='doughnut_chart'),
-
-
+    path('calendar/<slug:date>', views.projects_time_intervals, name='projects_time_intervals'),
 
 ]
