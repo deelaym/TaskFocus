@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2> date </h2>
+    <h2> {{ date }} </h2>
+    {% include 'includes/project/time_intervals_calendar.html' %}
+
 
     <div class="mb-5" style="height: 1008px; position: relative;">
         <hr style="margin-bottom: 1px">
@@ -13,7 +15,9 @@
                 <div class="text-white" style="background-color: {{ project.color }}; height: {{ interval.1 }}px; width:92%;
                 display: flex; justify-content: center; position: absolute; top: {{ interval.0 }}px;
                 left: 7%; border-radius: 7px;">
-                    {{ project.name }}
+                    {% if interval.1 > 21 %}
+                        {{ project.name }}
+                    {% endif %}
                 </div>
             {% endfor %}
         {% endfor %}

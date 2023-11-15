@@ -126,10 +126,8 @@ def project_restart(request, username, slug):
 def project_timer(request, username, slug):
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
     current_time = project.timer
-    if b'current_time' in request.body and b'duration' in request.body:
+    if b'duration' in request.body:
         data = json.loads(request.body)
-        hours, minutes, seconds = map(int, data['current_time'].split(':'))
-        project.timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
         date1, date2 = data['duration'][0], data['duration'][1]
         time1 = datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=date1[3], minute=date1[4], second=date1[5])
@@ -137,6 +135,8 @@ def project_timer(request, username, slug):
         date_first = datetime.date(day=date1[0], month=date1[1], year=date1[2])
         date_second = datetime.date(day=date2[0], month=date2[1], year=date2[2])
         PX = 42
+
+        project.timer += time2 - time1
 
         if date_first != date_second:
             delta1 = (datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=23, minute=59, second=59) - time1).total_seconds() * PX / 3600
@@ -357,7 +357,7 @@ def task_delete(request, username, slug, day_id, task_id):
 @login_required
 def projects_reports(request, username):
     projects = Project.objects.filter(user=request.user.id)
-    total_hours = sum([project.timer.total_seconds() for project in projects]) // 3600
+    total_hours = round(sum([project.timer.total_seconds() for project in projects]) / 3600, 2)
     return render(request, 'project/reports.html', {'total_hours': total_hours})
 
 
@@ -365,7 +365,7 @@ def projects_reports(request, username):
 def projects_doughnut_chart(request, username):
     projects = Project.objects.filter(user=request.user.id)
     labels = [project.name for project in projects]
-    data = [project.timer.total_seconds() // 3600 for project in projects]
+    data = [round(project.timer.total_seconds() / 3600, 2) for project in projects]
     colors = [project.color for project in projects]
     projects = {'labels': labels, 'data': data, 'colors': colors}
     return JsonResponse(projects)
@@ -375,9 +375,19 @@ def projects_doughnut_chart(request, username):
 def projects_time_intervals(request, username, date):
     range24 = [str(i).zfill(2)for i in range(24)]
     time_intervals = dict()
+    date_human_readable = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%d %B %Y')
     for project in Project.objects.filter(user=request.user.id):
         if date in project.time_intervals:
             time_intervals[project] = project.time_intervals[date]
     return render(request, 'project/time_intervals.html', {'time_intervals': time_intervals,
-                                                           'date': date,
+                                                           'date': date_human_readable,
                                                            'range24': range24})
+
+@login_required
+def projects_time_intervals_jump_to_date(request, username):
+    if request.POST:
+        date = request.POST.get('date')
+        if not date:
+            date = datetime.date.today()
+        return redirect('project:projects_time_intervals', username=request.user.username, date=date)
+    return render(request, 'includes/project/time_intervals_calendar.html')

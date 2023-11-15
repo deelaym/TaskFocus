@@ -3,6 +3,7 @@ import markdown
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
+import datetime
 
 register = template.Library()
 
@@ -42,3 +43,8 @@ def task_text(text):
 def task_video(text):
     *_, video = validate_video(text)
     return video
+
+
+@register.simple_tag
+def today():
+    return datetime.date.today()

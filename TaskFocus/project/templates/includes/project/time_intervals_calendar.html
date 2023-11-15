@@ -1,0 +1,7 @@
+    <form method="post" action="{% url 'project:projects_time_intervals_jump_to_date' request.user.username %}">
+        {% csrf_token %}
+        <span class="d-flex justify-content-between mt-2">
+            <input type="date" class="form-control me-1" name="date" style="width: 90%;">
+            <input type="submit" value="Jump to date" class="btn btn-primary">
+        </span>
+    </form>

@@ -1,5 +1,5 @@
 let username = document.getElementById('username').value;
-let hours = parseInt(document.getElementById('total_hours').value);
+let hours = parseFloat(document.getElementById('total_hours').value);
 
 (function () {
     let xhr = new XMLHttpRequest();
@@ -23,7 +23,6 @@ let hours = parseInt(document.getElementById('total_hours').value);
         },
         options: {
             cutoutPercentage: 70,
-
         }
     });
     Chart.pluginService.register({
