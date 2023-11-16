@@ -2,9 +2,12 @@
 {% load static %}
 
 {% block content %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js" integrity="sha512-7U4rRB8aGAHGVad3u2jiC7GA5/1YhQcQjxKeaVms/bT66i3LVBMRcBI9KwABNWnxOSwulkuSXxZLGuyfvo7V1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <input type="hidden" id="username" value="{{ request.user.username }}">
     <input type="hidden" id="total_hours" value="{{ total_hours }}">
     <script src="{% static 'js/doughnut_chart.js' %}"></script>
     <canvas id="doughnut-chart"></canvas>
+    <input type="hidden" id="username1" value="{{ request.user.username }}">
+    <script src="{% static 'js/stacked_bar.js' %}"></script>
+    <canvas id="stacked-bar"></canvas>
 {% endblock %}

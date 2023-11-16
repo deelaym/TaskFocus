@@ -1,3 +1,4 @@
+import collections
 import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Project, Day, Task
@@ -139,20 +140,24 @@ def project_timer(request, username, slug):
         project.timer += time2 - time1
 
         if date_first != date_second:
-            delta1 = (datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=23, minute=59, second=59) - time1).total_seconds() * PX / 3600
+            delta1 = (datetime.datetime(day=date1[0], month=date1[1], year=date1[2], hour=23, minute=59, second=59) - time1).total_seconds()
+            delta1px = delta1 * PX / 3600
             time3 = datetime.datetime(day=date2[0], month=date2[1], year=date2[2], hour=0, minute=0, second=0)
-            delta2 = (time2 - time3).total_seconds() * PX / 3600
+            delta2 = (time2 - time3).total_seconds()
+            delta2px = delta2 * PX / 3600
+
 
             time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600
 
-            durations = {date_first: [time1, delta1],
-                         date_second: [0, delta2]}
+            durations = {date_first: [time1, delta1px, delta1],
+                         date_second: [0, delta2px, delta2]}
             project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
             project.time_intervals.setdefault(str(date_second), []).append(durations[date_second])
         else:
-            delta = (time2 - time1).total_seconds() * PX / 3600
+            delta = (time2 - time1).total_seconds()
+            deltapx = delta * PX / 3600
             time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600
-            durations = {date_first: [time1, delta]}
+            durations = {date_first: [time1, deltapx, delta]}
             project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
 
         project.save()
@@ -368,6 +373,25 @@ def projects_doughnut_chart(request, username):
     data = [round(project.timer.total_seconds() / 3600, 2) for project in projects]
     colors = [project.color for project in projects]
     projects = {'labels': labels, 'data': data, 'colors': colors}
+    return JsonResponse(projects)
+
+
+@login_required
+def projects_stacked_bar_chart(request, username):
+    projects = Project.objects.filter(user=request.user.id)
+    labels = [project.name for project in projects]
+    months = list(range(1, 13))
+    data = []
+    for project in projects:
+        time_by_months = {m: 0 for m in months}
+        for date, time in project.time_intervals.items():
+            month = date.split('-')[1]
+            for t in time:
+                time_by_months[int(month)] += t[2] / 3600
+
+        data.append(list(time_by_months.values()))
+    colors = [project.color for project in projects]
+    projects = {'labels': labels, 'data': data, 'colors': colors, 'months': months}
     return JsonResponse(projects)
 
 

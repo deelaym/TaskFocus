@@ -16,9 +16,9 @@ let hours = parseFloat(document.getElementById('total_hours').value);
         data: {
             labels: labels,
             datasets: [{
-            data: data,
-            backgroundColor: colors,
-            borderColor: "transparent"
+                data: data,
+                backgroundColor: colors,
+                borderColor: "transparent"
             }]
         },
         options: {

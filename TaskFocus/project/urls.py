@@ -25,6 +25,7 @@ urlpatterns = [
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/delete/', views.task_delete, name='task_delete'),
     path('reports/', views.projects_reports, name='projects_reports'),
     path('reports/doughnut/', views.projects_doughnut_chart, name='doughnut_chart'),
+    path('reports/stacked_bar/', views.projects_stacked_bar_chart, name='stacked_bar_chart'),
     path('calendar/<slug:date>/', views.projects_time_intervals, name='projects_time_intervals'),
     path('calendar/', views.projects_time_intervals_jump_to_date, name='projects_time_intervals_jump_to_date'),
 
