@@ -1,5 +1,4 @@
 let username = document.getElementById('username').value;
-let hours = parseFloat(document.getElementById('total_hours').value);
 
 (function () {
     let xhr = new XMLHttpRequest();
@@ -23,26 +22,8 @@ let hours = parseFloat(document.getElementById('total_hours').value);
         },
         options: {
             cutoutPercentage: 70,
+
         }
-    });
-    Chart.pluginService.register({
-      beforeDraw: function(chart) {
-        var width = chart.chart.width,
-            height = chart.chart.height,
-            ctx = chart.chart.ctx;
-
-        ctx.restore();
-        var fontSize = (height / 112).toFixed(2);
-        ctx.font = fontSize + "em sans-serif";
-        ctx.textBaseline = "middle";
-
-        var text = `${hours}h`,
-            textX = Math.round((width - ctx.measureText(text).width) / 2),
-            textY = height / 1.8;
-
-        ctx.fillText(text, textX, textY);
-        ctx.save();
-      }
     });
     }
     };

@@ -362,8 +362,10 @@ def task_delete(request, username, slug, day_id, task_id):
 @login_required
 def projects_reports(request, username):
     projects = Project.objects.filter(user=request.user.id)
+    completed_projects = projects.filter(complete=True)
     total_hours = round(sum([project.timer.total_seconds() for project in projects]) / 3600, 2)
-    return render(request, 'project/reports.html', {'total_hours': total_hours})
+    return render(request, 'project/reports.html', {'total_hours': total_hours, 'projects': projects,
+                                                    'completed_projects': completed_projects})
 
 
 @login_required
@@ -380,14 +382,22 @@ def projects_doughnut_chart(request, username):
 def projects_stacked_bar_chart(request, username):
     projects = Project.objects.filter(user=request.user.id)
     labels = [project.name for project in projects]
-    months = list(range(1, 13))
+    months = set()
+    for project in projects:
+        for date in project.time_intervals:
+            month = date.split('-')
+            months.add(f'{month[1]}/{month[0][2:]}')
+
+    months = sorted(months)
+
     data = []
     for project in projects:
         time_by_months = {m: 0 for m in months}
         for date, time in project.time_intervals.items():
-            month = date.split('-')[1]
+            month = date.split('-')
+            month = f'{month[1]}/{month[0][2:]}'
             for t in time:
-                time_by_months[int(month)] += t[2] / 3600
+                time_by_months[month] += t[2] / 3600
 
         data.append(list(time_by_months.values()))
     colors = [project.color for project in projects]
