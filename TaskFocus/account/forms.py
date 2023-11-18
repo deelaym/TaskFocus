@@ -2,6 +2,7 @@ import string
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import User
 FIELD_WIDTH = 42
 
 class LoginForm(AuthenticationForm):
@@ -43,8 +44,15 @@ class UserCreateForm(UserCreationForm):
             if ch not in chars:
                 raise forms.ValidationError('The username should only contain Latin letters, numbers, and underscore _.')
         if username == 'admin':
-            raise forms.ValidationError('admin cannot be a username')
+            raise forms.ValidationError('"admin" cannot be a username')
         return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('A user with this email already exists.')
+        return email
+
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):
