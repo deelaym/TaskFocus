@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Reports{% endblock %}
+
 {% block content %}
     <h2>Reports</h2>
     <div class="fs-4">Total projects: <strong>{{ projects.count }}</strong></div>
     <div class="fs-4">Completed projects: <strong>{{ completed_projects.count }}</strong></div>
-    <div class="row justify-content-center mb-3" style="position: relative;">
+    <div class="fs-4">Total time: <strong>{{ total_hours }}h</strong></div>
+    <div class="row justify-content-center mb-3">
         <h3 class="text-center">Projects total time</h3>
         <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js" integrity="sha512-7U4rRB8aGAHGVad3u2jiC7GA5/1YhQcQjxKeaVms/bT66i3LVBMRcBI9KwABNWnxOSwulkuSXxZLGuyfvo7V1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <input type="hidden" id="username" value="{{ request.user.username }}">
         <script src="{% static 'js/doughnut_chart.js' %}"></script>
-        <div style="position: absolute; top: 55%; left: 45%; width: 15%; height: 15%; font-size: 140%">Total: {{ total_hours }}h</div>
         <div style="width: 40%; height: 40%;"><canvas id="doughnut-chart"></canvas></div>
     </div>
     <div class="row justify-content-center mb-5">

@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import timedelta
-from django.utils.text import slugify
+from pytils.translit import slugify
 from django.contrib.auth.models import User
 
 
@@ -9,7 +9,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=30)
     timer = models.DurationField(default=timedelta(seconds=0))
-    time_intervals = models.JSONField(default=dict())
+    time_intervals = models.JSONField(default=dict)
     slug = models.SlugField()
     edit_mode = models.BooleanField(default=True)
     complete = models.BooleanField(default=False)

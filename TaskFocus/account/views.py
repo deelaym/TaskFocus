@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView
-from .forms import LoginForm, UserCreateForm, CustomPasswordChangeForm, CustomPasswordResetForm
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
+from .forms import LoginForm, UserCreateForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordResetConfirmForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 
@@ -44,6 +44,15 @@ class CustomPasswordChangeView(PasswordChangeView):
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm
+
+    def form_invalid(self, form):
+        for field in form:
+            messages.error(self.request, field.errors, extra_tags='danger')
+        return super().form_invalid(form)
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    form_class = CustomPasswordResetConfirmForm
 
     def form_invalid(self, form):
         for field in form:

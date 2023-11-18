@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Calendar{% endblock %}
+
 {% block content %}
     <h2> {{ date }} </h2>
     {% include 'includes/project/time_intervals_calendar.html' %}

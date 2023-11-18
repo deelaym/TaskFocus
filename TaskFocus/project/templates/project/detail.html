@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load project_tags %}
 
+{% block title %}{{ project.name }}{% endblock %}
+
 {% block content %}
     {% include 'includes/project/detail.html' %}
     {% if not project.days.all %}

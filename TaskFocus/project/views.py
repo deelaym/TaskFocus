@@ -163,7 +163,8 @@ def project_timer(request, username, slug):
         project.save()
         return JsonResponse({'current_time': current_time, 'duration': data['duration']})
 
-    return JsonResponse({'current_time': current_time})
+    messages.error(request, 'Error', extra_tags='danger')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -372,7 +373,7 @@ def projects_reports(request, username):
 def projects_doughnut_chart(request, username):
     projects = Project.objects.filter(user=request.user.id)
     labels = [project.name for project in projects]
-    data = [round(project.timer.total_seconds() / 3600, 2) for project in projects]
+    data = [round(project.timer.total_seconds() / 3600, 3) for project in projects]
     colors = [project.color for project in projects]
     projects = {'labels': labels, 'data': data, 'colors': colors}
     return JsonResponse(projects)

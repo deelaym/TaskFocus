@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Create a day{% endblock %}
+
 {% block content %}
     <form method="post" action="{% url 'project:day_create' request.user.username project.slug %}">
         {% csrf_token %}

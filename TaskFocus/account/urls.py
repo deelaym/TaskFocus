@@ -8,6 +8,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('password_change/', views.CustomPasswordChangeView.as_view(), name='password_change'),
     path('password_reset/', views.CustomPasswordResetView.as_view(), name='password_reset'),
+    path('reset/<uidb64>/<token>/', views.CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('<slug:username>/settings/', views.account_settings, name='account_settings'),
     path('<slug:username>/delete/', views.account_delete, name='account_delete'),
 ]
