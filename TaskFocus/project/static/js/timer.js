@@ -2,8 +2,8 @@ let initialTotalTime = document.getElementById('totalTime').value;
 let timer = document.getElementById('timer');
 let startBtn = document.getElementById('startBtn');
 let pauseBtn = document.getElementById('pauseBtn');
-let slug = document.getElementById('slug').value;
 let username = document.getElementById('username').value;
+let slug;
 
 let totalTime = initialTotalTime.replace(',', ':').split(':');
 let days;
@@ -44,6 +44,7 @@ function updateTime() {
         minutes: minutes,
         seconds: seconds,
         startTime: startTime,
+        slug: slug,
     };
         window.localStorage.setItem('time', JSON.stringify(data));
 
@@ -52,8 +53,11 @@ function updateTime() {
 
 window.addEventListener('load', () => {
     isRunning = JSON.parse(window.localStorage.getItem('isRunning'));
-    if (window.localStorage.getItem('time') !== null && isRunning['isRunning']) {
-        let data = JSON.parse(window.localStorage.getItem('time'));
+    let currentUrl = window.location.href;
+    let data = JSON.parse(window.localStorage.getItem('time'));
+    slug = data['slug']
+    if (window.localStorage.getItem('time') !== null && isRunning['isRunning'] && currentUrl.includes(`/${slug}/`)) {
+
 
         hours = data['hours'];
         minutes = data['minutes'];
@@ -79,11 +83,13 @@ start = () => {
     pauseBtn.disabled = false;
     pauseBtn.style.display = 'inline';
 
+    slug = document.getElementById('slug').value;
     let data = {
         hours: hours,
         minutes: minutes,
         seconds: seconds,
         startTime: startTime,
+        slug: slug,
     };
     window.localStorage.setItem('time', JSON.stringify(data));
 
@@ -98,12 +104,15 @@ go_on = () => {
     pauseBtn.disabled = false;
     pauseBtn.style.display = 'inline';
 
-    startTime = JSON.parse(window.localStorage.getItem('time'))['startTime'];
-    let data = {
+    let data = JSON.parse(window.localStorage.getItem('time'))
+    startTime = data['startTime'];
+    slug = data['slug'];
+    data = {
         hours: hours,
         minutes: minutes,
         seconds: seconds,
         startTime: startTime,
+        slug: slug,
     };
     window.localStorage.setItem('time', JSON.stringify(data));
 
@@ -145,7 +154,7 @@ stop = () => {
 
     isRunning = {isRunning: false}
     window.localStorage.setItem('isRunning', JSON.stringify(isRunning));
-
+    slug = data['slug'];
     fetch(`/${username}/project/${slug}/timer/`, {
         method: 'POST',
         headers: {

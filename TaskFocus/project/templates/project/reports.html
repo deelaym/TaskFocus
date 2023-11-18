@@ -11,12 +11,12 @@
         <input type="hidden" id="username" value="{{ request.user.username }}">
         <script src="{% static 'js/doughnut_chart.js' %}"></script>
         <div style="position: absolute; top: 55%; left: 45%; width: 15%; height: 15%; font-size: 140%">Total: {{ total_hours }}h</div>
-        <div style="width: 30%; height: 30%;"><canvas id="doughnut-chart"></canvas></div>
+        <div style="width: 40%; height: 40%;"><canvas id="doughnut-chart"></canvas></div>
     </div>
     <div class="row justify-content-center mb-5">
         <h3 class="text-center">Duration per month</h3>
         <input type="hidden" id="username1" value="{{ request.user.username }}">
         <script src="{% static 'js/stacked_bar.js' %}"></script>
-        <div style="width: 70%; height: 70%;"><canvas id="stacked-bar"></canvas></div>
+        <div style="width: 60%; height: 60%;"><canvas id="stacked-bar"></canvas></div>
     </div>
 {% endblock %}
