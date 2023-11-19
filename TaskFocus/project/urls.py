@@ -30,3 +30,4 @@ urlpatterns = [
     path('calendar/', views.projects_time_intervals_jump_to_date, name='projects_time_intervals_jump_to_date'),
 
 ]
+

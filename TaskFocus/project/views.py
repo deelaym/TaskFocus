@@ -203,7 +203,7 @@ def day_create(request, username, slug):
 
 @login_required
 def day_detail(request, username, slug, day_id):
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
     day_form = DayForm()
@@ -239,7 +239,7 @@ def day_detail(request, username, slug, day_id):
 
 @login_required
 def day_complete(request, username, slug, day_id):
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
     if request.POST:
         tasks_mandatory = day.tasks.filter(optional=False)
@@ -265,7 +265,7 @@ def day_complete(request, username, slug, day_id):
 
 @login_required
 def day_edit(request, username, slug, day_id):
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
     if request.POST:
@@ -286,14 +286,14 @@ def day_edit(request, username, slug, day_id):
 
 @login_required
 def day_delete(request, username, slug, day_id):
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     day.delete()
     return redirect('project:project_detail', username=request.user.username, slug=slug)
 
 
 @login_required
 def task_create(request, username, slug, day_id):
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
     if request.POST:
         task_form = TaskForm(request.POST)
@@ -313,9 +313,9 @@ def task_create(request, username, slug, day_id):
 
 @login_required
 def task_complete(request, username, slug, day_id, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, day__project__user=request.user.id, day__project__slug=slug, day__id=day_id)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
-    day = get_object_or_404(Day, id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     if request.POST:
         task.complete = request.POST.get('complete') == 'True'
         task.save()
@@ -329,8 +329,8 @@ def task_complete(request, username, slug, day_id, task_id):
 
 @login_required
 def task_edit(request, username, slug, day_id, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    day = get_object_or_404(Day, id=day_id)
+    task = get_object_or_404(Task, id=task_id, day__project__user=request.user.id, day__project__slug=slug, day__id=day_id)
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
 
 
@@ -355,7 +355,7 @@ def task_edit(request, username, slug, day_id, task_id):
 
 @login_required
 def task_delete(request, username, slug, day_id, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, day__project__user=request.user.id, day__project__slug=slug, day__id=day_id)
     task.delete()
     return redirect(request.META.get('HTTP_REFERER'))
 
@@ -426,3 +426,4 @@ def projects_time_intervals_jump_to_date(request, username):
             date = datetime.date.today()
         return redirect('project:projects_time_intervals', username=request.user.username, date=date)
     return render(request, 'includes/project/time_intervals_calendar.html')
+

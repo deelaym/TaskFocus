@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.conf.urls import handler404
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,3 +27,5 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('account/', include('django.contrib.auth.urls')),
 ]
+
+handler404 = 'TaskFocus.views.error_404'
