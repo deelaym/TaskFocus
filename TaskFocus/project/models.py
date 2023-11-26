@@ -43,6 +43,7 @@ class Task(models.Model):
     name = models.CharField(max_length=200)
     complete = models.BooleanField(default=False)
     optional = models.BooleanField(default=False)
+    custom_order = models.IntegerField(default=0, blank=True)
 
 
 

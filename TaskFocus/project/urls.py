@@ -19,6 +19,7 @@ urlpatterns = [
     path('project/<slug:slug>/day/<int:day_id>/complete/', views.day_complete, name='day_complete'),
     path('project/<slug:slug>/day/<int:day_id>/edit/', views.day_edit, name='day_edit'),
     path('project/<slug:slug>/day/<int:day_id>/delete/', views.day_delete, name='day_delete'),
+    path('project/<slug:slug>/day/<int:day_id>/update_order/', views.day_update_tasks_order, name='day_update_tasks_order'),
     path('project/<slug:slug>/day/<int:day_id>/create/', views.task_create, name='task_create'),
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/complete/', views.task_complete, name='task_complete'),
     path('project/<slug:slug>/day/<int:day_id>/task/<int:task_id>/edit/', views.task_edit, name='task_edit'),

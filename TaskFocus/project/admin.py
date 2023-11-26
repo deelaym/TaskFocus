@@ -15,5 +15,5 @@ class DayAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['name', 'day', 'optional', 'complete']
+    list_display = ['name', 'day', 'custom_order', 'optional', 'complete']
 

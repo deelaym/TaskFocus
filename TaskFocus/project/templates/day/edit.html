@@ -10,11 +10,7 @@
                 <p>{{ day_form.name }}</p>
                 <p>{{ day_form.date }}</p>
             </div>
-            <ul class="list-group list-group-flush">
-                {% for task in day.tasks.all %}
-                    {% include 'includes/task/complete.html' %}
-                {% endfor %}
-            </ul>
+
             <div class="card-footer d-flex justify-content-center">
                 <input class="btn btn-primary" type="submit" value="Submit">
             </div>

@@ -9,6 +9,7 @@ import json
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Case, When
 
 
 DAY_WIDTH = 85
@@ -154,9 +155,9 @@ def project_timer(request, username, slug):
             project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
             project.time_intervals.setdefault(str(date_second), []).append(durations[date_second])
         else:
-            delta = (time2 - time1).total_seconds()
-            deltapx = delta * PX / 3600
-            time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600
+            delta = (time2 - time1).total_seconds()  # промежуток времени
+            deltapx = delta * PX / 3600  # промежуток времени в пикселях
+            time1 = datetime.timedelta(hours=date1[3], minutes=date1[4], seconds=date1[5]).total_seconds() * PX / 3600  # отступ в пикселях от начала дня
             durations = {date_first: [time1, deltapx, delta]}
             project.time_intervals.setdefault(str(date_first), []).append(durations[date_first])
 
@@ -205,6 +206,7 @@ def day_create(request, username, slug):
 def day_detail(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
+    tasks = day.tasks.all().order_by('custom_order')
 
     day_form = DayForm()
     task_form = TaskForm()
@@ -234,6 +236,7 @@ def day_detail(request, username, slug, day_id):
                                                'paginated_days': paginated_days,
                                                'range_paginated_days': range_paginated_days,
                                                'progress': progress,
+                                               'tasks': tasks,
                                                'DAY_WIDTH': DAY_WIDTH})
 
 
@@ -292,6 +295,18 @@ def day_delete(request, username, slug, day_id):
 
 
 @login_required
+def day_update_tasks_order(request, username, slug, day_id):
+    day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
+    if b'tasks' in request.body:
+        tasks_ids = json.loads(request.body)['tasks']
+        tasks_ids = map(int, tasks_ids)
+        ordering = Case(*[When(id=id, then=pos) for pos, id in enumerate(tasks_ids)])
+        day.tasks.all().update(custom_order=ordering)
+        return JsonResponse({'success': 'success'})
+    return JsonResponse('error')
+
+
+@login_required
 def task_create(request, username, slug, day_id):
     day = get_object_or_404(Day, id=day_id, project__user=request.user.id, project__slug=slug)
     project = get_object_or_404(Project, slug=slug, user=request.user.id)
@@ -301,8 +316,13 @@ def task_create(request, username, slug, day_id):
             cd = task_form.cleaned_data
             name = cd['name']
             optional = cd['optional']
-            task = Task(name=name, optional=optional, day=day)
+            order = day.tasks.count()
+            task = Task(name=name, optional=optional, day=day, custom_order=order)
             task.save()
+            return redirect(request.META.get('HTTP_REFERER'))
+        else:
+            for field in task_form:
+                messages.error(request, field.errors, extra_tags='danger')
             return redirect(request.META.get('HTTP_REFERER'))
     else:
         task_form = TaskForm()

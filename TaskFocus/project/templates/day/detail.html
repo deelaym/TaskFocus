@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ day.name }}{% endblock %}
 
@@ -42,14 +43,22 @@
                     </div>
                 {% endif %}
             </div>
-            <ul class="list-group list-group-flush">
-                {% for task in day.tasks.all %}
-                    {% include 'includes/task/complete.html' %}
+
+
+            <ul class="list-group list-group-flush drag-list">
+                {% for task in tasks %}
+                    <li class="list-group-item drag-item" draggable="true">
+                        {% include 'includes/task/complete.html' %}
+                        <input type="hidden" class="task_id" value="{{ task.id }}">
+                    </li>
                 {% endfor %}
+
                 {% if not day.complete and project.edit_mode %}
                     {% include 'includes/task/create.html' %}
                 {% endif %}
             </ul>
+            <script type="text/javascript" src="{% static 'js/drag_and_drop_tasks.js' %}"></script>
+
             <div class="card-footer d-flex justify-content-center">
                 {% include 'includes/day/complete.html' %}
             </div>

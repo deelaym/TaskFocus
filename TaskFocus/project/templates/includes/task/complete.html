@@ -1,7 +1,9 @@
 {% load project_tags %}
 {% load embed_video_tags %}
+{% load static %}
 
-<li class="list-group-item">
+
+
     <form method="post" action="{% url 'project:task_complete' request.user.username project.slug day.id task.id %}">
         {% csrf_token %}
         <div class="form-check">
@@ -33,6 +35,6 @@
             </p>
         </div>
     </form>
-</li>
+
 
 
