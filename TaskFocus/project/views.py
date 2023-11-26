@@ -191,7 +191,8 @@ def day_create(request, username, slug):
         day_form = DayForm(request.POST)
         if day_form.is_valid():
             name = day_form.cleaned_data['name']
-            day = Day(name=name, project=project)
+            date = day_form.cleaned_data['date']
+            day = Day(name=name, project=project, date=date)
             day.save()
             last_day_id = day.id
             return redirect('project:day_detail', username=request.user.username, slug=slug, day_id=last_day_id)
